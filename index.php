@@ -278,7 +278,7 @@ if( isset( $_GET['action'] ) ) {
 		<form method="post" action="">
 			
 			<h1>Avertissement</h1>
-			<p>Ce fichier doit obligatoirement se trouvé dans le dossier <em>wp-quick-install</em>. Il ne doit pas être présent à la racine du projet ou de votre FTP.</p>
+			<p>Ce fichier doit obligatoirement se trouver dans le dossier <em>wp-quick-install</em>. Il ne doit pas être présent à la racine du projet ou de votre FTP.</p>
 			
 			<h1>Informations de la base de données</h1>
 			<p>Vous devez saisir ci-dessous les détails de connexion à votre base de données. Si vous ne les connaissez pas, contactez votre hébergeur.</p>
