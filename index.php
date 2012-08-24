@@ -294,7 +294,7 @@ else { ?>
 		</div>
 		<div id="success" style="display:none;">
 			<h1>Le monde est à vous !</h1>
-			<p>L'installation de WordPress s'est déroulé avec succès.</p>
+			<p>L'installation de WordPress s'est déroulée avec succès.</p>
 		</div>
 		<form method="post" action="">
 			
