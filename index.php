@@ -5,45 +5,79 @@ set_time_limit(0);
 /*	On construit le tableau de configuration
 /*-----------------------------------------------------------------------------------*/
 
-$data = array();
-
 // On récupère les données du fichier data.txt
 if( file_exists( 'data.txt' ) ) {
+	
+	$data = array();
+	
 	foreach ( file( 'data.txt' ) as $line ) {
 		$line = explode( ":", $line );
 		$data[trim($line[0])] = trim( $line[1] );
-	}	
-}
-
-// On transforme les éléments du tableau en variable
-extract($data);
-
-// On ajoute un / si le directory n'est pas vide
-$directory = !empty($directory) ? '../' .$directory . '/' : '../' ;
-
-/*-----------------------------------------------------------------------------------*/
-/*	On crée le fichier data.txt qui va contenir l'ensemble de la configuration
-/*-----------------------------------------------------------------------------------*/
+	}
 	
-if( isset( $_POST['weblog_title'] ) ) {
+	// On transforme les éléments du tableau en variable
+	extract($data);
 	
-	// On définit le contenu du fichier data.txt
-	$data_file = 'directory: ' . $_POST[ 'directory' ] . "\r\n";
-	$data_file .= 'weblog_title: ' . $_POST[ 'weblog_title' ] . "\r\n";
-	$data_file .= 'db: prefix=' . $_POST[ 'prefix' ] . '; dbname=' . $_POST[ 'dbname' ] . '; dbhost=' . $_POST[ 'dbhost' ] . '; uname=' . $_POST[ 'uname' ] . '; pwd=' . $_POST[ 'pwd' ] . "\r\n";
-	$data_file .= 'admin: user_name= ' . $_POST[ 'user_name' ] . '; admin_password= ' . $_POST[ 'admin_password' ] . '; admin_email=' . $_POST[ 'admin_email' ] . ' ' . "\r\n";
-	$data_file .= 'seo: ' . (int)$_POST[ 'seo' ] . "\r\n";
-	$data_file .= 'plugins: ' . $_POST[ 'plugins' ];
+	// On ajoute  ../ au directory
+	$directory = !empty($directory) ? '../' .$directory . '/' : '../' ;
 	
-	// On crée le fichier data.txt
-	file_put_contents( 'data.txt', $data_file);
+	// On construit un tableau avec les configurations de la BDD
+	$db_config = array();
+	$tmp_db_config = explode( ";", $db );
 	
+	foreach ( $tmp_db_config as $db_line ) {
+		$db_lines = explode( "=", $db_line );
+		$db_config[trim($db_lines[0])] = trim( $db_lines[1] );
+	} // foreach
+	
+	// On construit un tableau avec les configurations de l'admnistrateur
+	$admin_config = array();
+	$tmp_admin_config = explode( ";", $admin );
+	
+	foreach ( $tmp_admin_config as $admin_line ) {
+		$admin_lines = explode( "=", $admin_line );
+		$admin_config[trim($admin_lines[0])] = trim( $admin_lines[1] );
+	} // foreach
 }
 
 // Allez, maintenant on commence les choses sérieuses haha =D
 if( isset( $_GET['action'] ) ) {
 	
 	switch( $_GET['action'] ) {
+		
+		case "check_db_connection" :
+			
+			/*-----------------------------------------------------------------------------------*/
+			/*	On check si on arrive à se connecter à la base de données
+			/*-----------------------------------------------------------------------------------*/
+			
+			try {
+			   $db = new PDO('mysql:host='. $_POST['dbhost'] .';dbname=' . $_POST['dbname'] , $_POST['uname'], $_POST['pwd'] );
+			} // try
+			catch(Exception $e) {
+				echo "error etablishing connection";
+			} // catch
+			
+			break;
+		
+		case "create_data" :
+			
+			/*-----------------------------------------------------------------------------------*/
+			/*	On crée le fichier data.txt qui va contenir l'ensemble de la configuration
+			/*-----------------------------------------------------------------------------------*/
+				
+			// On définit le contenu du fichier data.txt
+			$data_file = 'directory: ' . $_POST[ 'directory' ] . "\r\n";
+			$data_file .= 'weblog_title: ' . $_POST[ 'weblog_title' ] . "\r\n";
+			$data_file .= 'db: prefix=' . $_POST[ 'prefix' ] . '; dbname=' . $_POST[ 'dbname' ] . '; dbhost=' . $_POST[ 'dbhost' ] . '; uname=' . $_POST[ 'uname' ] . '; pwd=' . $_POST[ 'pwd' ] . "\r\n";
+			$data_file .= 'admin: user_name= ' . $_POST[ 'user_name' ] . '; admin_password= ' . $_POST[ 'admin_password' ] . '; admin_email=' . $_POST[ 'admin_email' ] . ' ' . "\r\n";
+			$data_file .= 'seo: ' . (int)$_POST[ 'seo' ] . "\r\n";
+			$data_file .= 'plugins: ' . $_POST[ 'plugins' ];
+			
+			// On crée le fichier data.txt
+			file_put_contents( 'data.txt', $data_file);
+			
+			break;
 		
 		case "download_wp" :
 			
@@ -66,8 +100,12 @@ if( isset( $_GET['action'] ) ) {
 			if( !file_exists( $directory . 'wp-config.php' ) ) {
 				
 				// Si on souhaite mettre WordPress dans un sous-dossier, on le crée
-				if( !empty( $directory ) )
+				if( !empty( $directory ) ) {
 					mkdir( $directory );
+					
+					// On met à jour les droits d'écriture du fichier
+					chmod( $directory , 0755);
+				}
 				
 				// On dézip le fichier
 				exec( 'unzip wordpress' );
@@ -136,15 +174,6 @@ if( isset( $_GET['action'] ) ) {
 				/*-----------------------------------------------------------------------------------*/			
 				
 				// Ok trop cool, on a WP et ses plugins, maintenant on commence les choses sérieuses =-)
-				
-				// On construit un tableau avec les configurations de la BDD
-				$db_config = array();
-				$tmp_db_config = explode( ";", $db );
-				
-				foreach ( $tmp_db_config as $db_line ) {
-					$db_lines = explode( "=", $db_line );
-					$db_config[trim($db_lines[0])] = trim( $db_lines[1] );
-				}
 				
 				// On récupère les lignes du fichier wp-config-sample.php sous forme de tableau
 				$config_file = file( $directory . 'wp-config-sample.php' );
@@ -225,15 +254,6 @@ if( isset( $_GET['action'] ) ) {
 				require_once( $directory . 'wp-includes/wp-db.php' );
 				
 				
-				// On construit un tableau avec les configurations de l'admnistrateur
-				$admin_config = array();
-				$tmp_admin_config = explode( ";", $admin );
-				
-				foreach ( $tmp_admin_config as $admin_line ) {
-					$admin_lines = explode( "=", $admin_line );
-					$admin_config[trim($admin_lines[0])] = trim( $admin_lines[1] );
-				} // foreach
-				
 				// On installe WordPress
 				wp_install( $weblog_title, $admin_config['user_name'], $admin_config['admin_email'], (int)$seo, '', $admin_config['admin_password'] );
 				
@@ -256,28 +276,34 @@ if( isset( $_GET['action'] ) ) {
 				
 				break;
 	} // switch
-}
-?>
+} // if isset( $_GET['action'] )
+else { ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 	<head>
 		<title>WP Quick Install</title>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8">
-		<link rel="stylesheet" href="css/bootstrap.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="css/style.min.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
 	</head>
 	<body>
 		<div id="response"></div>
-		<div class="progress progress-striped">
+		<div class="progress progress-striped" style="display:none;">
 			<div class="bar" style="width: 0%;"></div>
 		</div>
-		<div id="success"  style="display:none;">
+		<div id="success" style="display:none;">
 			<h1>Le monde est à vous !</h1>
 			<p>L'installation de WordPress s'est déroulé avec succès.</p>
 		</div>
 		<form method="post" action="">
 			
-			<h1>Avertissement</h1>
+			<div class="alert alert-error" style="display:none;">
+				<strong>Attention !</strong>
+				<p style="margin-bottom:0px;">Erreur de connexion à la base de données. Merci de vérifier vos identifiants.</p>
+			</div>
+						
+			<h1>Avetissement</h1>			
 			<p>Ce fichier doit obligatoirement se trouver dans le dossier <em>wp-quick-install</em>. Il ne doit pas être présent à la racine du projet ou de votre FTP.</p>
 			
 			<h1>Informations de la base de données</h1>
@@ -379,50 +405,54 @@ if( isset( $_GET['action'] ) ) {
 		<script>
 		
 			$(document).ready(function() {
-				
-				// On cache la barre de progression
-				$('.progress').hide();
 									
 				var $response = $('#response');
 				
 				$('#submit').click( function( evt ) {
 					
 					var errors = false;
+					
 					$('input.required').each(function(){
 						if( $.trim($(this).val()) == '' ) {
 							errors = true;
 							$(this).css("border", "1px solid #FF0000");
-						} // else
+						} // if
 						else {
 							$(this).css("border", "1px solid #DFDFDF");
 						} // else
 					});
 					
-					// Si on n'a pas d'erreur, on peut continuer
-					if( !errors ) {
-						$('form').fadeOut( 'fast', function(){
-							
-							// On récupère les données du formulaire
-							$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=create_data', $('form').serialize(), function(data) {
-								step1();
-							});	
-						});
-					}
-					else {
-						$('html,body').animate( { scrollTop: $( 'input.required:first' ).offset().top } , 'slow' );
-					}
-					return false;
+					// On check la connexion à la BDD
+					$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=check_db_connection', $('form').serialize(), function(data) {
+						if( data == "error etablishing connection" ) {
+							$('html,body').animate( { scrollTop: $('html,body').offset().top } , 'slow' );
+							$('.alert-error').show();
+						} // if
+						else {
+							// Si on n'a pas d'erreur, on peut continuer
+							if( !errors ) {
+								$('form').fadeOut( 'fast', function(){
+									
+									// On récupère les données du formulaire
+									$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=create_data', $('form').serialize(), function(data) {
+										step1();
+									});	
+								});
+							}
+							else {
+								$('html,body').animate( { scrollTop: $( 'input.required:first' ).offset().top } , 'slow' );
+							}
+							return false;
+						} // else
+					});	
 				});
 					
 				// ETAPE 1
 				// On récupère l'archive de la dernière version de WordPress
 				function step1() {
-					
 					$response.html("<p>Téléchargement de l'archive de WordPress en cours...</p>");
-					
 					// On montre la barre de progression
 					$('.progress').show();
-					
 					$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=download_wp', function(data) {
 						step2();
 					});
@@ -433,7 +463,6 @@ if( isset( $_GET['action'] ) ) {
 				function step2() {
 					$response.html("<p>Installation des fichiers en cours...</p>" );
 					$('.progress .bar').animate({width: "20%"});
-					
 					$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=unzip_wp', function(data) {
 						step3();
 					});
@@ -463,7 +492,7 @@ if( isset( $_GET['action'] ) ) {
 				// ETAPE 5
 				// Création de la BDD et de l'administrateur
 				function step5() {
-					$response.html("<p>Création de la BDD et de l'administrateur cours...</p>");
+					$response.html("<p>Création de la BDD et de l'administrateur en cours...</p>");
 					$('.progress .bar').animate({width: "80%"});
 					$.get('<?php echo $_SERVER['PHP_SELF'] ?>/wp-admin/install.php?action=install_wp', function(data) {
 						step6();
@@ -475,16 +504,17 @@ if( isset( $_GET['action'] ) ) {
 				function step6() {
 					$response.html("<p>Installation terminée.</p>");
 					$('.progress .bar').animate({width: "100%"});
-					
 					$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=delete_data', function(data) {
-						
 						$response.delay(500).fadeOut();
 						$('.progress').delay(500).fadeOut();
 						$('#success').delay(500).fadeIn();
-												
 					});
 				}
 			});
 		</script>
 	</body>
 </html>
+	
+<?php
+}
+?>
