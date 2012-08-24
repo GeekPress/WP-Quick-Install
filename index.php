@@ -303,7 +303,7 @@ else { ?>
 				<p style="margin-bottom:0px;">Erreur de connexion à la base de données. Merci de vérifier vos identifiants.</p>
 			</div>
 						
-			<h1>Avetissement</h1>			
+			<h1>Avertissement</h1>			
 			<p>Ce fichier doit obligatoirement se trouver dans le dossier <em>wp-quick-install</em>. Il ne doit pas être présent à la racine du projet ou de votre FTP.</p>
 			
 			<h1>Informations de la base de données</h1>
