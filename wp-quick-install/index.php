@@ -191,8 +191,30 @@ if( isset( $_GET['action'] ) ) {
 			
 					switch ( $constant ) {
 						case 'WP_DEBUG'	   :
+							
+							// Mode Debug
 							if( (int)$_POST['debug'] == 1 )
 								$line = "define('" . $constant . "'," . $padding . "'true');\r\n";
+							
+							// On ajoute les constantes supplémentaires
+							if( (int)$_POST['post_revisions'] == 1 ) {
+								$line .= "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
+								$line .= "define('WP_POST_REVISIONS', false);";
+								fwrite($handle, $line);
+							}
+							
+							if( (int)$_POST['disallow_file_edit'] == 1 ) {
+								$line .= "\r\n\n " . "/** Désactivation de l'éditeur de thème et d'extension */" . "\r\n";
+								$line .= "define('DISALLOW_FILE_EDIT', false);";
+								fwrite($handle, $line);
+							}
+							
+							if( (int)$_POST['autosave_interval'] >= 1 ) {
+								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
+								$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
+								fwrite($handle, $line);
+							}
+							
 							break;
 						case 'DB_NAME'     :
 							$line = "define('" . $constant . "'," . $padding . "'" . addcslashes( $db_config['dbname'], "\\'" ) . "');\r\n";
@@ -223,28 +245,7 @@ if( isset( $_GET['action'] ) ) {
 				$handle = fopen($directory . 'wp-config.php', 'w');
 				foreach( $config_file as $line ) {
 					fwrite($handle, $line);
-				} // foreach
-				
-				// On ajoute les constantes supplémentaires
-				
-				if( (int)$_POST['post_revisions'] == 1 ) {
-					$line = "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
-					$line .= "define('WP_POST_REVISIONS', false);";
-					fwrite($handle, $line);
-				}
-				
-				if( (int)$_POST['disallow_file_edit'] == 1 ) {
-					$line = "\r\n\n " . "/** Désactivation de l'éditeur de thème et d'extension */" . "\r\n";
-					$line .= "define('DISALLOW_FILE_EDIT', false);";
-					fwrite($handle, $line);
-				}
-				
-				if( (int)$_POST['autosave_interval'] >= 1 ) {
-					$line = "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
-					$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
-					fwrite($handle, $line);
-				}
-				
+				} // foreach				
 				fclose($handle);
 				
 				// On met à jour les droits d'écriture du fichier
