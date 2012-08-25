@@ -148,21 +148,10 @@ if( isset( $_GET['action'] ) ) {
 					    	
 					    	// On  supprime l'archive temporaire
 					    	unlink( $plugins_directory . md5( $plugin ) . '.zip' );
-					    	
-					    	// On send un message à l'utilisateur - Soyons un minimum poli :-)
-					    	echo '<p>L\'extension <strong>' . $plugin . '</strong>  a été installé avec succès.</p>' ;
+					    
 					    } // if
-					    else {
-						    
-						    // On send un message à l'utilisateur - Soyons un minimum poli :-)
-						    echo '<p>L\'extension <strong>'. $plugin .'</strong>  n\'existe pas<./p>';
-					    } // else						
 					}					
 				} // foreach				
-			}
-			else {
-				// On send un message à l'utilisateur - Soyons un minimum poli :-)
-				echo '<p>Aucune extension a installé.</p>';				
 			}
 			
 			break;
@@ -201,6 +190,10 @@ if( isset( $_GET['action'] ) ) {
 					$padding  = $match[2];
 			
 					switch ( $constant ) {
+						case 'WP_DEBUG'	   :
+							if( (int)$_POST['debug'] == 1 )
+								$line = "define('" . $constant . "'," . $padding . "'true');\r\n";
+							break;
 						case 'DB_NAME'     :
 							$line = "define('" . $constant . "'," . $padding . "'" . addcslashes( $db_config['dbname'], "\\'" ) . "');\r\n";
 							break;
@@ -231,6 +224,27 @@ if( isset( $_GET['action'] ) ) {
 				foreach( $config_file as $line ) {
 					fwrite($handle, $line);
 				} // foreach
+				
+				// On ajoute les constantes supplémentaires
+				
+				if( (int)$_POST['post_revisions'] == 1 ) {
+					$line = "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
+					$line .= "define('WP_POST_REVISIONS', false);";
+					fwrite($handle, $line);
+				}
+				
+				if( (int)$_POST['disallow_file_edit'] == 1 ) {
+					$line = "\r\n\n " . "/** Désactivation de l'éditeur de thème et d'extension */" . "\r\n";
+					$line .= "define('DISALLOW_FILE_EDIT', false);";
+					fwrite($handle, $line);
+				}
+				
+				if( (int)$_POST['autosave_interval'] >= 1 ) {
+					$line = "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
+					$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
+					fwrite($handle, $line);
+				}
+				
 				fclose($handle);
 				
 				// On met à jour les droits d'écriture du fichier
@@ -289,7 +303,7 @@ else { ?>
 	</head>
 	<body>
 		<div id="response"></div>
-		<div class="progress progress-striped" style="display:none;">
+		<div class="progress progress-striped active" style="display:none;">
 			<div class="bar" style="width: 0%;"></div>
 		</div>
 		<div id="success" style="display:none;">
@@ -383,17 +397,53 @@ else { ?>
 			</table>
 			
 			<h1>Informations extensions</h1>
-			<p>Vous devez saisir ci-dessous les noms des extensions qui doivent être installé.</p>
-			<p>Le slug d'une extension est disponible dans son adresse url. 
-			<br/>Ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>/</p>
+			<p>Vous devez saisir ci-dessous les extensions qui doivent être ajoutées pendant l'installation.</p>
+			<div class="alert alert-info">
+				<p style="margin:0px; padding:0px;">Le slug d'une extension est disponible dans son adresse url.
+				<br/>ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>/</p>
+			</div>
 			<table class="form-table">
 				<tr>
 					<th scope="row">
 						<label for="plugins">Extensions</label>
-						<p>Séparez les slugs des plugins par un ;</p>
 					</th>
 					<td>
 						<input name="plugins" type="text" id="plugins" size="50" value="wordpress-seo; w3-total-cache" />
+						<p>Vérifiez bien que les slugs des extensions soient par un point virgule (;).</p>
+					</td>
+				</tr>
+			</table>
+			
+			<h1>Informations wp-config.php</h1>
+			<p>Vous devez choisir ci-dessous les constantes supplémentaires à ajouter dans le fichier <strong>wp-config.php</strong>.</p>
+			
+			<table class="form-table">
+				<tr>
+					<th scope="row">
+						<label for="plugins">Révisions</label>
+					</th>
+					<td colspan="2"><label><input type="checkbox" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="plugins">Éditeur</label>
+					</th>
+					<td colspan="2"><label><input type="checkbox" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="autosave_interval">Sauvegarde automatique</label>
+						<p>L'intervalle des sauvegardes sera de 60 secondes si vous laissez ce champ vide.</p>
+					</th>
+					<td><input name="autosave_interval" type="text" id="autosave_interval" size="25" value="7200" /> secondes</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="debug">Mode Debug</label>
+					</th>
+					<td colspan="2">
+						<label><input type="checkbox" name="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
+						<p>En passant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
 					</td>
 				</tr>
 			</table>
@@ -472,9 +522,10 @@ else { ?>
 				// Installation des plugins
 				
 				function step3() {
-					$response.html("<p>Installation des plugins en cours...</p>");
+					$response.html("<p>Installation des extensions en cours...</p>");
 					$('.progress .bar').animate({width: "40%"});
 					$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=install_plugins', function(data) {
+						$response.html(data);
 						step4();
 					});
 				}
@@ -484,7 +535,7 @@ else { ?>
 				function step4() {
 					$response.html("<p>Création du fichier wp-config.php en cours...</p>");
 					$('.progress .bar').animate({width: "60%"});
-					$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=wp_config', function(data) {
+					$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=wp_config', $('form').serialize(), function(data) {
 						step5();
 					});
 				}
@@ -505,16 +556,16 @@ else { ?>
 					$response.html("<p>Installation terminée.</p>");
 					$('.progress .bar').animate({width: "100%"});
 					$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=delete_data', function(data) {
-						$response.delay(500).fadeOut();
-						$('.progress').delay(500).fadeOut();
-						$('#success').delay(500).fadeIn();
+						$response.delay(500).hide();
+						$('.progress').delay(500).hide();
+						$('#success').delay(500).show();
 					});
 				}
 			});
 		</script>
 	</body>
 </html>
-	
+
 <?php
 }
 ?>
