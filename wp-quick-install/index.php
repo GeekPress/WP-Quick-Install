@@ -148,19 +148,16 @@ if( isset( $_GET['action'] ) ) {
 							if( (int)$_POST['post_revisions'] == 1 ) {
 								$line .= "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
 								$line .= "define('WP_POST_REVISIONS', false);";
-								fwrite($handle, $line);
 							}
 
 							if( (int)$_POST['disallow_file_edit'] == 1 ) {
 								$line .= "\r\n\n " . "/** Désactivation de l'éditeur de thème et d'extension */" . "\r\n";
 								$line .= "define('DISALLOW_FILE_EDIT', false);";
-								fwrite($handle, $line);
 							}
 
 							if( (int)$_POST['autosave_interval'] >= 1 ) {
 								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
 								$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
-								fwrite($handle, $line);
 							}
 							
 							$line .= "\r\n\n " . "/** On augmente la mémoire limite */" . "\r\n";
