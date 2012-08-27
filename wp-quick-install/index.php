@@ -318,7 +318,7 @@ else { ?>
 						<p>Un mot de passe vous sera automatiquement généré si vous laissez ce champ vide.</p>
 					</th>
 					<td>
-						<input name="admin_password" type="text" id="pass" size="25" value="" class="required" />
+						<input name="admin_password" type="text" id="pass" size="25" value="" />
 						<p>Conseil&nbsp;: votre mot de passe devrait faire au moins 7 caractères de long. Pour le rendre plus sûr, utilisez un mélange de majuscules, de minuscules, de chiffres et de symboles comme ! " ? $ %&nbsp;^&nbsp;&amp;&nbsp;).</p>
 					</td>
 				</tr>
