@@ -1,6 +1,12 @@
 <?php
 set_time_limit(0);
 
+
+// On check si on a un fichier de pré-configuration
+if( file_exists( 'data.ini' ) ) {
+	$data = json_encode( parse_ini_file( 'data.ini' ) );
+}
+
 // On ajoute  ../ au directory
 $directory = !empty( $_POST['directory'] ) ? '../' . $_POST['directory'] . '/' : '../';
 
@@ -51,7 +57,7 @@ if( isset( $_GET['action'] ) ) {
 					mkdir( $directory );
 
 					// On met à jour les droits d'écriture du fichier
-					chmod( $directory , 0755);
+					chmod( $directory , 0755 );
 				}
 
 				// On dézip le fichier
@@ -192,12 +198,12 @@ if( isset( $_GET['action'] ) ) {
 
 				$handle = fopen($directory . 'wp-config.php', 'w');
 				foreach( $config_file as $line ) {
-					fwrite($handle, $line);
+					fwrite( $handle, $line );
 				} // foreach
-				fclose($handle);
+				fclose( $handle );
 
 				// On met à jour les droits d'écriture du fichier
-				chmod($directory . 'wp-config.php', 0666);
+				chmod( $directory . 'wp-config.php', 0666 );
 
 				break;
 
@@ -218,7 +224,7 @@ if( isset( $_GET['action'] ) ) {
 
 
 				// On installe WordPress
-				wp_install( $_POST[ 'weblog_title' ], $_POST['user_name'], $_POST['admin_email'], (int)$_POST[ 'seo' ], '', $_POST['admin_password'] );
+				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int)$_POST[ 'seo' ], '', $_POST['admin_password'] );
 
 				// On met à jour les options siteurl et home avec la bonne adresse URL
 				$url = trim( str_replace( basename(dirname(__FILE__)) . '/index.php/wp-admin/install.php?action=install_wp' , str_replace( '../', '', $directory ), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] ), '/' ); // On définit l'adresse à utiliser pour les options siteurl et home_url
@@ -306,9 +312,9 @@ else { ?>
 					<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="" class="required" /></td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="user_name">Identifiant</label></th>
+					<th scope="row"><label for="user_login">Identifiant</label></th>
 					<td>
-						<input name="user_name" type="text" id="user_login" size="25" value="admin" class="required" />
+						<input name="user_login" type="text" id="user_login" size="25" value="admin" class="required" />
 						<p>Les identifiants doivent contenir uniquement des caractères alphanumériques, espaces, tiret bas, tiret, points et le symbole @.</p>
 					</td>
 				</tr>
@@ -318,7 +324,7 @@ else { ?>
 						<p>Un mot de passe vous sera automatiquement généré si vous laissez ce champ vide.</p>
 					</th>
 					<td>
-						<input name="admin_password" type="text" id="pass" size="25" value="" />
+						<input name="admin_password" type="text" id="admin_password" size="25" value="" />
 						<p>Conseil&nbsp;: votre mot de passe devrait faire au moins 7 caractères de long. Pour le rendre plus sûr, utilisez un mélange de majuscules, de minuscules, de chiffres et de symboles comme ! " ? $ %&nbsp;^&nbsp;&amp;&nbsp;).</p>
 					</td>
 				</tr>
@@ -329,7 +335,7 @@ else { ?>
 				</tr>
 				<tr>
 					<th scope="row"><label for="blog_public">Vie privée</label></th>
-					<td colspan="2"><label><input type="checkbox" name="blog_public" value="1" checked='checked' /> Demander aux moteurs de recherche d&rsquo;indexer ce site.</label></td>
+					<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked='checked' /> Demander aux moteurs de recherche d&rsquo;indexer ce site.</label></td>
 				</tr>
 			</table>
 
@@ -359,27 +365,27 @@ else { ?>
 					<th scope="row">
 						<label for="plugins">Révisions</label>
 					</th>
-					<td colspan="2"><label><input type="checkbox" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
+					<td colspan="2"><label><input type="checkbox" id="post_revisions" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
 				</tr>
 				<tr>
 					<th scope="row">
 						<label for="plugins">Éditeur</label>
 					</th>
-					<td colspan="2"><label><input type="checkbox" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
+					<td colspan="2"><label><input type="checkbox" id="disallow_file_edit" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
 				</tr>
 				<tr>
 					<th scope="row">
 						<label for="autosave_interval">Sauvegarde automatique</label>
 						<p>L'intervalle des sauvegardes sera de 60 secondes si vous laissez ce champ vide.</p>
 					</th>
-					<td><input name="autosave_interval" type="text" id="autosave_interval" size="25" value="7200" /> secondes</td>
+					<td><input name="autosave_interval" id="autosave_interval" type="text" size="25" value="7200" /> secondes</td>
 				</tr>
 				<tr>
 					<th scope="row">
 						<label for="debug">Mode Debug</label>
 					</th>
 					<td colspan="2">
-						<label><input type="checkbox" name="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
+						<label><input type="checkbox" name="debug" id="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
 						<p>En passant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
 					</td>
 				</tr>
@@ -391,7 +397,86 @@ else { ?>
 		<script>
 
 			$(document).ready(function() {
-
+				
+				<?php
+				// On check si on doit pré-remplir le formulaire
+				if( count( $data ) >= 0 ) { ?>
+				
+					var data = <?php echo $data; ?>;
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Dossier d'installation
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.directory !='undefined' )
+						$('#directory').val(data.directory);
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Titre du blog
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.title !='undefined' )
+						$('#weblog_title').val(data.title);
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Identifiants BDD
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.db.prefix !='undefined' )
+						$('#prefix').val(data.db.prefix);
+					
+					if( typeof data.db.dbname !='undefined' )
+						$('#dbname').val(data.db.dbname);
+					
+					if( typeof data.db.dbhost !='undefined' )
+						$('#dbhost').val(data.db.dbhost);
+					
+					if( typeof data.db.uname !='undefined' )
+						$('#uname').val(data.db.uname);
+					
+					if( typeof data.db.pwd !='undefined' )
+						$('#pwd').val(data.db.pwd);
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Identifiants admin
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.admin.user_login !='undefined' )
+						$('#user_login').val(data.admin.user_login);
+					
+					if( typeof data.admin.password !='undefined' )
+						$('#admin_password').val(data.admin.password);
+					
+					if( typeof data.admin.email !='undefined' )
+						$('#admin_email').val(data.admin.email);
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Activer le SEO
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.seo !='undefined' )
+						( parseInt(data.seo) == 1 ) ? $('#blog_public').attr('checked', 'checked') : $('#blog_public').removeAttr('checked');
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Liste des plugins
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.plugins !='undefined' )
+						$('#plugins').val( data.plugins.join(';') );
+					
+					/*-----------------------------------------------------------------------------------*/
+					/*	Constantes du fichier wp-config.php
+					/*-----------------------------------------------------------------------------------*/
+					if( typeof data.wp_config.autosave_interval !='undefined' )
+						$('#autosave_interval').val(data.wp_config.autosave_interval);
+					
+					if( typeof data.wp_config.post_revisions !='undefined' )
+						( parseInt(data.wp_config.post_revisions) == 1 ) ? $('#post_revisions').attr('checked', 'checked') : $('#post_revisions').removeAttr('checked');
+					
+					if( typeof data.wp_config.disallow_file_edit !='undefined' )
+						( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
+					
+					if( typeof data.wp_config.debug !='undefined' )
+						( parseInt(data.wp_config.debug) == 1 ) ? $('#debug').attr('checked', 'checked') : $('#debug').removeAttr('checked');
+					
+				<?php
+				} // if count( $data ) >= 0
+				?>
+				
 				var $response  = $('#response');
 
 				$('#submit').click( function() {
@@ -430,10 +515,10 @@ else { ?>
 										step2();
 									});
 								});
-							}
+							} // if
 							else {
 								$('html,body').animate( { scrollTop: $( 'input.required:first' ).offset().top } , 'slow' );
-							}
+							} // else
 							return false;
 						} // else
 					});
