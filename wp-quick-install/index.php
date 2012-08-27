@@ -161,7 +161,7 @@ if( isset( $_GET['action'] ) ) {
 							}
 							
 							$line .= "\r\n\n " . "/** On augmente la mémoire limite */" . "\r\n";
-							$line .= "define('WP_MEMORY_LIMIT', '96M')" . "\r\n";
+							$line .= "define('WP_MEMORY_LIMIT', '96M');" . "\r\n";
 
 							break;
 						case 'DB_NAME'     :
