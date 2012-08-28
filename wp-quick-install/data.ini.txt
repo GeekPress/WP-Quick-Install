@@ -1,0 +1,64 @@
+; ======================
+; Modifier le nom du fichier en data.ini pour s'en servir comme fichier de pré-configuration
+; ======================
+
+;;;;
+; Entrez ci-dessous le dossier d'installation
+;;;;
+
+directory = demo
+
+
+;;;;
+; Entrez ci-dessous le titre de votre site
+;;;;
+
+title = "New Projet"
+
+
+;;;;
+; Entrez ci-dessous les identifiants de la base de données
+;;;;
+
+db['dbname'] = demo; 
+db['dbhost'] = localhost;
+db['prefix'] = wp_;
+db['uname']  = root; 
+db['pwd']    = root;
+
+
+;;;;
+; Entrez ci-dessous les informations de l'administrateur
+;;;;
+
+admin['user_login'] = admin; 
+admin['password']   = demo; 
+admin['email']      = demo@example.com
+
+
+;;;;
+; Activer le SEO ?
+; 1 = Oui, 0 = Non
+;;;;
+
+seo = 0
+
+
+;;;;
+; Listez les plugins à installer ci-dessous.
+; Nous vous conseillons les plugins suivants (décommentez pout utiliser) :
+;;;;
+
+;plugins[] = wordpress-seo 
+;plugins[] = w3-total-cache
+
+
+;;;;
+; Liste des constantes à ajouter dans le fichier wp-config.php
+; 1 = Oui, 0 = Non
+;;;;
+
+wp_config['post_revisions']     = 1
+wp_config['disallow_file_edit'] = 1
+wp_config['autosave_interval']  = 7200
+wp_config['debug']              = 0
