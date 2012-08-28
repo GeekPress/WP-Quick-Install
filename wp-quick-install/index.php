@@ -232,6 +232,21 @@ if( isset( $_GET['action'] ) ) {
 				update_option( 'home', $url );
 
 				break;
+			
+			case "success" :
+				
+				/*-----------------------------------------------------------------------------------*/
+				/*	En cas de succès, on ajoute les liens vers l'admin et le site
+				/*-----------------------------------------------------------------------------------*/
+				
+				/** Load WordPress Bootstrap */
+				require_once( $directory . 'wp-load.php' );
+				
+				// Lien vers l'administration
+				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">Se connecter à l\'admnistration</a>';
+				echo '<a href="' . home_url() . '" class="button" target="_blank">Voir le site</a>';
+					
+				break;
 				
 	} // switch
 } // if isset( $_GET['action'] )
@@ -245,338 +260,356 @@ else { ?>
 		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
 	</head>
 	<body>
-		<div id="response"></div>
-		<div class="progress progress-striped active" style="display:none;">
-			<div class="bar" style="width: 0%;"></div>
-		</div>
-		<div id="success" style="display:none;">
-			<h1>Le monde est à vous !</h1>
-			<p>L'installation de WordPress s'est déroulée avec succès.</p>
-		</div>
-		<form method="post" action="">
-
-			<div class="alert alert-error" style="display:none;">
-				<strong>Attention !</strong>
-				<p style="margin-bottom:0px;">Erreur de connexion à la base de données. Merci de vérifier vos identifiants.</p>
+		<?php
+		$parent_dir = realpath( dirname ( dirname( __FILE__ ) ) );
+		if( is_writable( $parent_dir ) ) { ?>
+			
+			<div id="response"></div>
+			<div class="progress progress-striped active" style="display:none;">
+				<div class="bar" style="width: 0%;"></div>
 			</div>
-
-			<h1>Avertissement</h1>
-			<p>Ce fichier doit obligatoirement se trouver dans le dossier <em>wp-quick-install</em>. Il ne doit pas être présent à la racine du projet ou de votre FTP.</p>
-
-			<h1>Informations de la base de données</h1>
-			<p>Vous devez saisir ci-dessous les détails de connexion à votre base de données. Si vous ne les connaissez pas, contactez votre hébergeur.</p>
-
-			<table class="form-table">
-				<tr>
-					<th scope="row"><label for="dbname">Nom de la base de données</label></th>
-					<td><input name="dbname" id="dbname" type="text" size="25" value="wordpress" class="required" /></td>
-					<td>Le nom de la base de données dans laquelle vous souhaitez installer WordPress.</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="uname">Identifiant</label></th>
-					<td><input name="uname" id="uname" type="text" size="25" value="utilisateur" class="required" /></td>
-					<td>Votre identifiant MySQL</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="pwd">Mot de passe</label></th>
-					<td><input name="pwd" id="pwd" type="text" size="25" value="mot de passe" /></td>
-					<td>&hellip;et son mot de passe MySQL.</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="dbhost">Adresse de la base de données</label></th>
-					<td><input name="dbhost" id="dbhost" type="text" size="25" value="localhost" class="required" /></td>
-					<td>Si <code>localhost</code> ne fonctionne pas, votre hébergeur doit pouvoir vous donner la bonne information.</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="prefix">Préfixe des tables</label></th>
-					<td><input name="prefix" id="prefix" type="text" value="wp_" size="25" class="required" /></td>
-					<td>Si vous souhaitez faire tourner plusieurs installations de WordPress sur une même base de données, modifiez ce réglage.</td>
-				</tr>
-			</table>
-
-			<h1>Informations nécessaires</h1>
-			<p>Merci de fournir les informations suivantes. Ne vous inquiétez pas, vous pourrez les modifier plus tard.</p>
-
-			<table class="form-table">
-				<tr>
-					<th scope="row">
-						<label for="directory">Dossier d'installation</label>
-						<p>Laissez vide pour que les fichiers de WordPress soient installés à la racine.</p>
-					</th>
-					<td>
-						<input name="directory" type="text" id="directory" size="25" value="" />
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="weblog_title">Titre du site</label></th>
-					<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="" class="required" /></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="user_login">Identifiant</label></th>
-					<td>
-						<input name="user_login" type="text" id="user_login" size="25" value="admin" class="required" />
-						<p>Les identifiants doivent contenir uniquement des caractères alphanumériques, espaces, tiret bas, tiret, points et le symbole @.</p>
-					</td>
-				</tr>
-						<tr>
-					<th scope="row">
-						<label for="admin_password">Mot de passe</label>
-						<p>Un mot de passe vous sera automatiquement généré si vous laissez ce champ vide.</p>
-					</th>
-					<td>
-						<input name="admin_password" type="text" id="admin_password" size="25" value="" />
-						<p>Conseil&nbsp;: votre mot de passe devrait faire au moins 7 caractères de long. Pour le rendre plus sûr, utilisez un mélange de majuscules, de minuscules, de chiffres et de symboles comme ! " ? $ %&nbsp;^&nbsp;&amp;&nbsp;).</p>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="admin_email">Votre adresse de messagerie</label></th>
-					<td><input name="admin_email" type="text" id="admin_email" size="25" value="" class="required" />
-					<p>Vérifiez bien cette adresse de messagerie avant de continuer.</p></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="blog_public">Vie privée</label></th>
-					<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked='checked' /> Demander aux moteurs de recherche d&rsquo;indexer ce site.</label></td>
-				</tr>
-			</table>
-
-			<h1>Informations extensions</h1>
-			<p>Vous devez saisir ci-dessous les extensions qui doivent être ajoutées pendant l'installation.</p>
-			<div class="alert alert-info">
-				<p style="margin:0px; padding:0px;">Le slug d'une extension est disponible dans son adresse url.
-				<br/>ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>/</p>
+			<div id="success" style="display:none;">
+				<h1>Le monde est à vous !</h1>
+				<p>L'installation de WordPress s'est déroulée avec succès.</p>
 			</div>
-			<table class="form-table">
-				<tr>
-					<th scope="row">
-						<label for="plugins">Extensions</label>
-					</th>
-					<td>
-						<input name="plugins" type="text" id="plugins" size="50" value="wordpress-seo; w3-total-cache" />
-						<p>Vérifiez bien que les slugs des extensions soient par un point virgule (;).</p>
-					</td>
-				</tr>
-			</table>
-
-			<h1>Informations wp-config.php</h1>
-			<p>Vous devez choisir ci-dessous les constantes supplémentaires à ajouter dans le fichier <strong>wp-config.php</strong>.</p>
-
-			<table class="form-table">
-				<tr>
-					<th scope="row">
-						<label for="plugins">Révisions</label>
-					</th>
-					<td colspan="2"><label><input type="checkbox" id="post_revisions" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<label for="plugins">Éditeur</label>
-					</th>
-					<td colspan="2"><label><input type="checkbox" id="disallow_file_edit" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<label for="autosave_interval">Sauvegarde automatique</label>
-						<p>L'intervalle des sauvegardes sera de 60 secondes si vous laissez ce champ vide.</p>
-					</th>
-					<td><input name="autosave_interval" id="autosave_interval" type="text" size="25" value="7200" /> secondes</td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<label for="debug">Mode Debug</label>
-					</th>
-					<td colspan="2">
-						<label><input type="checkbox" name="debug" id="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
-						<p>En passant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
-					</td>
-				</tr>
-			</table>
-			<p class="step"><span id="submit" class="button">Installer WordPress</span></p>
-		</form>
-
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-		<script>
-
-			$(document).ready(function() {
-				
-				<?php
-				// On check si on doit pré-remplir le formulaire
-				if( count( $data ) >= 1 ) { ?>
-				
-					var data = <?php echo $data; ?>;
+			<form method="post" action="">
+	
+				<div class="alert alert-error" style="display:none;">
+					<strong>Attention !</strong>
+					<p style="margin-bottom:0px;">Erreur de connexion à la base de données. Merci de vérifier vos identifiants.</p>
+				</div>
+	
+				<h1>Avertissement</h1>
+				<p>Ce fichier doit obligatoirement se trouver dans le dossier <em>wp-quick-install</em>. Il ne doit pas être présent à la racine du projet ou de votre FTP.</p>
+	
+				<h1>Informations de la base de données</h1>
+				<p>Vous devez saisir ci-dessous les détails de connexion à votre base de données. Si vous ne les connaissez pas, contactez votre hébergeur.</p>
+	
+				<table class="form-table">
+					<tr>
+						<th scope="row"><label for="dbname">Nom de la base de données</label></th>
+						<td><input name="dbname" id="dbname" type="text" size="25" value="wordpress" class="required" /></td>
+						<td>Le nom de la base de données dans laquelle vous souhaitez installer WordPress.</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="uname">Identifiant</label></th>
+						<td><input name="uname" id="uname" type="text" size="25" value="utilisateur" class="required" /></td>
+						<td>Votre identifiant MySQL</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="pwd">Mot de passe</label></th>
+						<td><input name="pwd" id="pwd" type="text" size="25" value="mot de passe" /></td>
+						<td>&hellip;et son mot de passe MySQL.</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="dbhost">Adresse de la base de données</label></th>
+						<td><input name="dbhost" id="dbhost" type="text" size="25" value="localhost" class="required" /></td>
+						<td>Si <code>localhost</code> ne fonctionne pas, votre hébergeur doit pouvoir vous donner la bonne information.</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="prefix">Préfixe des tables</label></th>
+						<td><input name="prefix" id="prefix" type="text" value="wp_" size="25" class="required" /></td>
+						<td>Si vous souhaitez faire tourner plusieurs installations de WordPress sur une même base de données, modifiez ce réglage.</td>
+					</tr>
+				</table>
+	
+				<h1>Informations nécessaires</h1>
+				<p>Merci de fournir les informations suivantes. Ne vous inquiétez pas, vous pourrez les modifier plus tard.</p>
+	
+				<table class="form-table">
+					<tr>
+						<th scope="row">
+							<label for="directory">Dossier d'installation</label>
+							<p>Laissez vide pour que les fichiers de WordPress soient installés à la racine.</p>
+						</th>
+						<td>
+							<input name="directory" type="text" id="directory" size="25" value="" />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="weblog_title">Titre du site</label></th>
+						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="" class="required" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="user_login">Identifiant</label></th>
+						<td>
+							<input name="user_login" type="text" id="user_login" size="25" value="admin" class="required" />
+							<p>Les identifiants doivent contenir uniquement des caractères alphanumériques, espaces, tiret bas, tiret, points et le symbole @.</p>
+						</td>
+					</tr>
+							<tr>
+						<th scope="row">
+							<label for="admin_password">Mot de passe</label>
+							<p>Un mot de passe vous sera automatiquement généré si vous laissez ce champ vide.</p>
+						</th>
+						<td>
+							<input name="admin_password" type="text" id="admin_password" size="25" value="" />
+							<p>Conseil&nbsp;: votre mot de passe devrait faire au moins 7 caractères de long. Pour le rendre plus sûr, utilisez un mélange de majuscules, de minuscules, de chiffres et de symboles comme ! " ? $ %&nbsp;^&nbsp;&amp;&nbsp;).</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="admin_email">Votre adresse de messagerie</label></th>
+						<td><input name="admin_email" type="text" id="admin_email" size="25" value="" class="required" />
+						<p>Vérifiez bien cette adresse de messagerie avant de continuer.</p></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="blog_public">Vie privée</label></th>
+						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked='checked' /> Demander aux moteurs de recherche d&rsquo;indexer ce site.</label></td>
+					</tr>
+				</table>
+	
+				<h1>Informations extensions</h1>
+				<p>Vous devez saisir ci-dessous les extensions qui doivent être ajoutées pendant l'installation.</p>
+				<div class="alert alert-info">
+					<p style="margin:0px; padding:0px;">Le slug d'une extension est disponible dans son adresse url.
+					<br/>ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>/</p>
+				</div>
+				<table class="form-table">
+					<tr>
+						<th scope="row">
+							<label for="plugins">Extensions</label>
+						</th>
+						<td>
+							<input name="plugins" type="text" id="plugins" size="50" value="wordpress-seo; w3-total-cache" />
+							<p>Vérifiez bien que les slugs des extensions soient par un point virgule (;).</p>
+						</td>
+					</tr>
+				</table>
+	
+				<h1>Informations wp-config.php</h1>
+				<p>Vous devez choisir ci-dessous les constantes supplémentaires à ajouter dans le fichier <strong>wp-config.php</strong>.</p>
+	
+				<table class="form-table">
+					<tr>
+						<th scope="row">
+							<label for="plugins">Révisions</label>
+						</th>
+						<td colspan="2"><label><input type="checkbox" id="post_revisions" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="plugins">Éditeur</label>
+						</th>
+						<td colspan="2"><label><input type="checkbox" id="disallow_file_edit" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="autosave_interval">Sauvegarde automatique</label>
+							<p>L'intervalle des sauvegardes sera de 60 secondes si vous laissez ce champ vide.</p>
+						</th>
+						<td><input name="autosave_interval" id="autosave_interval" type="text" size="25" value="7200" /> secondes</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="debug">Mode Debug</label>
+						</th>
+						<td colspan="2">
+							<label><input type="checkbox" name="debug" id="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
+							<p>En passant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
+						</td>
+					</tr>
+				</table>
+				<p class="step"><span id="submit" class="button">Installer WordPress</span></p>
+			</form>
+			
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+			<script>
+	
+				$(document).ready(function() {
 					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Dossier d'installation
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.directory !='undefined' )
-						$('#directory').val(data.directory);
+					<?php
+					// On check si on doit pré-remplir le formulaire
+					if( count( $data ) >= 1 ) { ?>
 					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Titre du blog
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.title !='undefined' )
-						$('#weblog_title').val(data.title);
+						var data = <?php echo $data; ?>;
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Dossier d'installation
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.directory !='undefined' )
+							$('#directory').val(data.directory);
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Titre du blog
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.title !='undefined' )
+							$('#weblog_title').val(data.title);
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Identifiants BDD
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.db.prefix !='undefined' )
+							$('#prefix').val(data.db.prefix);
+						
+						if( typeof data.db.dbname !='undefined' )
+							$('#dbname').val(data.db.dbname);
+						
+						if( typeof data.db.dbhost !='undefined' )
+							$('#dbhost').val(data.db.dbhost);
+						
+						if( typeof data.db.uname !='undefined' )
+							$('#uname').val(data.db.uname);
+						
+						if( typeof data.db.pwd !='undefined' )
+							$('#pwd').val(data.db.pwd);
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Identifiants admin
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.admin.user_login !='undefined' )
+							$('#user_login').val(data.admin.user_login);
+						
+						if( typeof data.admin.password !='undefined' )
+							$('#admin_password').val(data.admin.password);
+						
+						if( typeof data.admin.email !='undefined' )
+							$('#admin_email').val(data.admin.email);
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Activer le SEO
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.seo !='undefined' )
+							( parseInt(data.seo) == 1 ) ? $('#blog_public').attr('checked', 'checked') : $('#blog_public').removeAttr('checked');
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Liste des plugins
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.plugins !='undefined' )
+							$('#plugins').val( data.plugins.join(';') );
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Constantes du fichier wp-config.php
+						/*-----------------------------------------------------------------------------------*/
+						if( typeof data.wp_config.autosave_interval !='undefined' )
+							$('#autosave_interval').val(data.wp_config.autosave_interval);
+						
+						if( typeof data.wp_config.post_revisions !='undefined' )
+							( parseInt(data.wp_config.post_revisions) == 1 ) ? $('#post_revisions').attr('checked', 'checked') : $('#post_revisions').removeAttr('checked');
+						
+						if( typeof data.wp_config.disallow_file_edit !='undefined' )
+							( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
+						
+						if( typeof data.wp_config.debug !='undefined' )
+							( parseInt(data.wp_config.debug) == 1 ) ? $('#debug').attr('checked', 'checked') : $('#debug').removeAttr('checked');
+						
+					<?php
+					} // if count( $data ) >= 0
+					?>
 					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Identifiants BDD
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.db.prefix !='undefined' )
-						$('#prefix').val(data.db.prefix);
-					
-					if( typeof data.db.dbname !='undefined' )
-						$('#dbname').val(data.db.dbname);
-					
-					if( typeof data.db.dbhost !='undefined' )
-						$('#dbhost').val(data.db.dbhost);
-					
-					if( typeof data.db.uname !='undefined' )
-						$('#uname').val(data.db.uname);
-					
-					if( typeof data.db.pwd !='undefined' )
-						$('#pwd').val(data.db.pwd);
-					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Identifiants admin
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.admin.user_login !='undefined' )
-						$('#user_login').val(data.admin.user_login);
-					
-					if( typeof data.admin.password !='undefined' )
-						$('#admin_password').val(data.admin.password);
-					
-					if( typeof data.admin.email !='undefined' )
-						$('#admin_email').val(data.admin.email);
-					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Activer le SEO
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.seo !='undefined' )
-						( parseInt(data.seo) == 1 ) ? $('#blog_public').attr('checked', 'checked') : $('#blog_public').removeAttr('checked');
-					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Liste des plugins
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.plugins !='undefined' )
-						$('#plugins').val( data.plugins.join(';') );
-					
-					/*-----------------------------------------------------------------------------------*/
-					/*	Constantes du fichier wp-config.php
-					/*-----------------------------------------------------------------------------------*/
-					if( typeof data.wp_config.autosave_interval !='undefined' )
-						$('#autosave_interval').val(data.wp_config.autosave_interval);
-					
-					if( typeof data.wp_config.post_revisions !='undefined' )
-						( parseInt(data.wp_config.post_revisions) == 1 ) ? $('#post_revisions').attr('checked', 'checked') : $('#post_revisions').removeAttr('checked');
-					
-					if( typeof data.wp_config.disallow_file_edit !='undefined' )
-						( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
-					
-					if( typeof data.wp_config.debug !='undefined' )
-						( parseInt(data.wp_config.debug) == 1 ) ? $('#debug').attr('checked', 'checked') : $('#debug').removeAttr('checked');
-					
-				<?php
-				} // if count( $data ) >= 0
-				?>
-				
-				var $response  = $('#response');
-
-				$('#submit').click( function() {
-
-					var errors = false;
-
-					$('input.required').each(function(){
-						if( $.trim($(this).val()) == '' ) {
-							errors = true;
-							$(this).css("border", "1px solid #FF0000");
-						} // if
-						else {
-							$(this).css("border", "1px solid #DFDFDF");
-						} // else
-					});
-
-					// On check la connexion à la BDD
-					$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=check_db_connection', $('form').serialize(), function(data) {
-						if( data == "error etablishing connection" ) {
-							$('html,body').animate( { scrollTop: $('html,body').offset().top } , 'slow' );
-							$('.alert-error').show();
-						} // if
-						else {
-							// Si on n'a pas d'erreur, on peut continuer
-							if( !errors ) {
-								$('form').fadeOut( 'fast', function(){
-									
-									// ETAPE 1
-									// On récupère l'archive de la dernière version de WordPress
-									$response.html("<p>Téléchargement de l'archive de WordPress en cours...</p>");
-									
-									// On montre la barre de progression
-									$('.progress').show();
-									
-									$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=download_wp', function(data) {
-										step2();
-									});
-								});
+					var $response  = $('#response');
+	
+					$('#submit').click( function() {
+	
+						var errors = false;
+	
+						$('input.required').each(function(){
+							if( $.trim($(this).val()) == '' ) {
+								errors = true;
+								$(this).css("border", "1px solid #FF0000");
 							} // if
 							else {
-								$('html,body').animate( { scrollTop: $( 'input.required:first' ).offset().top } , 'slow' );
+								$(this).css("border", "1px solid #DFDFDF");
 							} // else
-							return false;
-						} // else
+						});
+	
+						// On check la connexion à la BDD
+						$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=check_db_connection', $('form').serialize(), function(data) {
+							if( data == "error etablishing connection" ) {
+								$('html,body').animate( { scrollTop: $('html,body').offset().top } , 'slow' );
+								$('.alert-error').show();
+							} // if
+							else {
+								// Si on n'a pas d'erreur, on peut continuer
+								if( !errors ) {
+									$('form').fadeOut( 'fast', function(){
+										
+										// ETAPE 1
+										// On récupère l'archive de la dernière version de WordPress
+										$response.html("<p>Téléchargement de l'archive de WordPress en cours...</p>");
+										
+										// On montre la barre de progression
+										$('.progress').show();
+										
+										$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=download_wp', function(data) {
+											step2();
+										});
+									});
+								} // if
+								else {
+									$('html,body').animate( { scrollTop: $( 'input.required:first' ).offset().top } , 'slow' );
+								} // else
+								return false;
+							} // else
+						});
 					});
+	
+					// ETAPE 2
+					// Décompression de l'archive de WordPress
+					function step2() {
+						$response.html("<p>Installation des fichiers en cours...</p>" );
+						$('.progress .bar').animate({width: "20%"});
+						$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=unzip_wp', $('form').serialize(), function(data) {
+							step3();
+						});
+					}
+	
+					// ETAPE 3
+					// Installation des plugins
+	
+					function step3() {
+						$response.html("<p>Installation des extensions en cours...</p>");
+						$('.progress .bar').animate({width: "40%"});
+						$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=install_plugins', $('form').serialize(), function(data) {
+							$response.html(data);
+							step4();
+						});
+					}
+	
+					// ETAPE 4
+					// Création du fichier wp-config.php
+					function step4() {
+						$response.html("<p>Création du fichier wp-config.php en cours...</p>");
+						$('.progress .bar').animate({width: "60%"});
+						$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=wp_config', $('form').serialize(), function(data) {
+							step5();
+						});
+					}
+	
+					// ETAPE 5
+					// Création de la BDD et de l'administrateur
+					function step5() {
+						$response.html("<p>Création de la BDD et de l'administrateur en cours...</p>");
+						$('.progress .bar').animate({width: "80%"});
+						$.post('<?php echo $_SERVER['PHP_SELF'] ?>/wp-admin/install.php?action=install_wp', $('form').serialize(), function(data) {
+							step6();
+						});
+					}
+	
+					//ETAPE 6
+					// Suppression de l'archive d'origine
+					function step6() {
+						$response.html("<p>Installation terminée.</p>");
+						$('.progress .bar').animate({width: "100%"});
+						$response.delay(500).hide();
+						$('.progress').delay(500).hide();
+						$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=success',$('form').serialize(), function(data) {
+							$('#success').delay(500).show().append(data);
+						});
+					}
 				});
-
-				// ETAPE 2
-				// Décompression de l'archive de WordPress
-				function step2() {
-					$response.html("<p>Installation des fichiers en cours...</p>" );
-					$('.progress .bar').animate({width: "20%"});
-					$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=unzip_wp', $('form').serialize(), function(data) {
-						step3();
-					});
-				}
-
-				// ETAPE 3
-				// Installation des plugins
-
-				function step3() {
-					$response.html("<p>Installation des extensions en cours...</p>");
-					$('.progress .bar').animate({width: "40%"});
-					$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=install_plugins', $('form').serialize(), function(data) {
-						$response.html(data);
-						step4();
-					});
-				}
-
-				// ETAPE 4
-				// Création du fichier wp-config.php
-				function step4() {
-					$response.html("<p>Création du fichier wp-config.php en cours...</p>");
-					$('.progress .bar').animate({width: "60%"});
-					$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=wp_config', $('form').serialize(), function(data) {
-						step5();
-					});
-				}
-
-				// ETAPE 5
-				// Création de la BDD et de l'administrateur
-				function step5() {
-					$response.html("<p>Création de la BDD et de l'administrateur en cours...</p>");
-					$('.progress .bar').animate({width: "80%"});
-					$.post('<?php echo $_SERVER['PHP_SELF'] ?>/wp-admin/install.php?action=install_wp', $('form').serialize(), function(data) {
-						step6();
-					});
-				}
-
-				//ETAPE 6
-				// Suppression de l'archive d'origine
-				function step6() {
-					$response.html("<p>Installation terminée.</p>");
-					$('.progress .bar').animate({width: "100%"});
-					$response.delay(500).hide();
-					$('.progress').delay(500).hide();
-					$('#success').delay(500).show();
-				}
-			});
-		</script>
+			</script>	
+		<?php	
+		} // if is_writable( $parent_dir ) )
+		else { ?>
+			
+			<div class="alert alert-error" style="margin-bottom: 0px;">
+				<strong>Attention !</strong>
+				<p style="margin-bottom:0px;">Le dossier <strong><?php echo basename( $parent_dir ); ?></strong> n'a pas les droits d'écriture. Merci de modifier les droits afin que WP Quick Install fonctionne correctement.</p>
+			</div>
+			
+		<?php
+		} // else
+		?>
 	</body>
 </html>
 <?php
