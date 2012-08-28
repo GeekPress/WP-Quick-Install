@@ -279,7 +279,7 @@ else { ?>
 				</tr>
 				<tr>
 					<th scope="row"><label for="pwd">Mot de passe</label></th>
-					<td><input name="pwd" id="pwd" type="text" size="25" value="mot de passe" class="required" /></td>
+					<td><input name="pwd" id="pwd" type="text" size="25" value="mot de passe" /></td>
 					<td>&hellip;et son mot de passe MySQL.</td>
 				</tr>
 				<tr>
