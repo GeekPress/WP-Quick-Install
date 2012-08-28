@@ -263,7 +263,7 @@ if( isset( $_GET['action'] ) ) {
 				require_once( $directory . 'wp-load.php' );
 				
 				// Lien vers l'administration
-				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">Se connecter à l\'admnistration</a>';
+				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">Se connecter à l\'administration</a>';
 				echo '<a href="' . home_url() . '" class="button" target="_blank">Voir le site</a>';
 					
 				break;
