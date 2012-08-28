@@ -60,16 +60,34 @@ if( isset( $_GET['action'] ) ) {
 					chmod( $directory , 0755 );
 				}
 
-				// On dézip le fichier
-				exec( 'unzip wordpress' );
+				
+				$zip = new ZipArchive;
+				
+				// On check si on peut se servir de l'archive
+				if( $zip->open( 'wordpress.zip' ) === true ) {
+					
+					// On dézip l'archive de WordPress	
+					$zip->extractTo( '.' );
+					$zip->close();
+					
+					// On scan le dossier
+					$files = scandir( 'wordpress' );
+					
+					// On supprime "." et ".." qui correspondent au dossier courant et parent
+					unset( $files[0], $files[1] );
+					
+					// On déplace les fichiers et les dossiers
+					foreach ( $files as $file )
+						rename(  'wordpress/' . $file, $directory . '/' . $file ); 
+	
+					
+					rmdir( 'wordpress' ); // On supprime le dossier wordpress
+					unlink( $directory . '/license.txt' ); // On supprime le fichier licence.txt
+					unlink( $directory . '/readme.html' ); // On supprime le fichier readme.html
+					
+				} // if
 
-				// On fait une copie du dossier
-				exec( 'cp -rp wordpress/* ' . $directory );
-
-				// On supprime le dossier wordpress
-				exec( 'rm -rf wordpress' );
-
-			}
+			} // if!file_exists( $directory . 'wp-config.php' )
 			break;
 
 		case "install_plugins" :
@@ -95,19 +113,21 @@ if( isset( $_GET['action'] ) ) {
 					    if( $xml != NULL ) {
 
 					    	// On récupère la dernière version de WordPress et on la place à la racine
-					    	file_put_contents( $plugins_directory . md5( $plugin ) . '.zip', file_get_contents( $xml->download_link ) );
+					    	file_put_contents( $plugin . '.zip', file_get_contents( $xml->download_link ) );
 
-					    	// On dézip le fichier
-							exec( 'tar xvzf ' . $plugins_directory . md5( $plugin ) . '.zip -C ' . $plugins_directory .'/' );
-
-					    	// On  supprime l'archive temporaire
-					    	unlink( $plugins_directory . md5( $plugin ) . '.zip' );
-
+					    	// On dézip le plugin
+					    	$zip = new ZipArchive;
+							if( $zip->open( $plugin . '.zip' ) === true ) {
+								$zip->extractTo( $plugins_directory );
+								$zip->close();
+								
+								// On  supprime l'archive temporaire
+								unlink( $plugin . '.zip' );	
+							}
 					    } // if
-					}
+					} // if
 				} // foreach
-			}
-
+			} // if !empty( $_POST['plugins'] )
 			break;
 
 			case "wp_config" :
