@@ -1,8 +1,8 @@
 <?php
 set_time_limit(0);
 
-
 // On check si on a un fichier de pré-configuration
+$data = array();
 if( file_exists( 'data.ini' ) ) {
 	$data = json_encode( parse_ini_file( 'data.ini' ) );
 }
@@ -400,7 +400,7 @@ else { ?>
 				
 				<?php
 				// On check si on doit pré-remplir le formulaire
-				if( count( $data ) >= 0 ) { ?>
+				if( count( $data ) >= 1 ) { ?>
 				
 					var data = <?php echo $data; ?>;
 					
