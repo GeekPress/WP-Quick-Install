@@ -244,7 +244,7 @@ if( isset( $_GET['action'] ) ) {
 
 
 				// On installe WordPress
-				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int)$_POST[ 'seo' ], '', $_POST['admin_password'] );
+				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int)$_POST[ 'blog_public' ], '', $_POST['admin_password'] );
 
 				// On met à jour les options siteurl et home avec la bonne adresse URL
 				$url = trim( str_replace( basename(dirname(__FILE__)) . '/index.php/wp-admin/install.php?action=install_wp' , str_replace( '../', '', $directory ), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] ), '/' ); // On définit l'adresse à utiliser pour les options siteurl et home_url
