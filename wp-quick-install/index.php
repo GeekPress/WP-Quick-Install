@@ -167,24 +167,37 @@ if( isset( $_GET['action'] ) ) {
 						case 'WP_DEBUG'	   :
 
 							// Mode Debug
-							if( (int)$_POST['debug'] == 1 )
+							if( (int)$_POST['debug'] == 1 ) {
 								$line = "define('" . $constant . "'," . $padding . "'true');\r\n";
-
+								
+								// Affichage des erreurs
+								if( (int)$_POST['debug_display'] == 1 ) {
+									$line .= "\r\n\n " . "/** Affichage des erreurs à l'écran */" . "\r\n";
+									$line .= "define('WP_DEBUG_DISPLAY'," . $padding . "'true');\r\n";
+								} // if
+								
+								// Ecriture des erreurs dans un fichier log
+								if( (int)$_POST['debug_log'] == 1 ) {
+									$line .= "\r\n\n " . "/** Ecriture des erreurs dans un fichier log */" . "\r\n";
+									$line .= "define('WP_DEBUG_LOG'," . $padding . "'true');\r\n";
+								}
+							} // if
+							
 							// On ajoute les constantes supplémentaires
 							if( (int)$_POST['post_revisions'] == 1 ) {
 								$line .= "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
 								$line .= "define('WP_POST_REVISIONS', false);";
-							}
+							} // if
 
 							if( (int)$_POST['disallow_file_edit'] == 1 ) {
 								$line .= "\r\n\n " . "/** Désactivation de l'éditeur de thème et d'extension */" . "\r\n";
 								$line .= "define('DISALLOW_FILE_EDIT', false);";
-							}
+							} // if
 
 							if( (int)$_POST['autosave_interval'] >= 1 ) {
 								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
 								$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
-							}
+							} // if
 							
 							$line .= "\r\n\n " . "/** On augmente la mémoire limite */" . "\r\n";
 							$line .= "define('WP_MEMORY_LIMIT', '96M');" . "\r\n";
@@ -391,7 +404,7 @@ else { ?>
 						</th>
 						<td>
 							<input name="plugins" type="text" id="plugins" size="50" value="wordpress-seo; w3-total-cache" />
-							<p>Vérifiez bien que les slugs des extensions soient par un point virgule (;).</p>
+							<p>Vérifiez bien que les slugs des extensions soient séparés par un point virgule (;).</p>
 						</td>
 					</tr>
 				</table>
@@ -425,7 +438,13 @@ else { ?>
 						</th>
 						<td colspan="2">
 							<label><input type="checkbox" name="debug" id="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
-							<p>En passant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
+							<p>En cochant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
+							
+							<div id="debug_options" style="display:none;">
+								<label><input type="checkbox" name="debug_display" id="debug_display" value="1" /> Afficher les erreurs à l'écran.</label>
+								<br/>
+								<label><input type="checkbox" name="debug_log" id="debug_log" value="1" /> Ecrire les erreurs dans un fichier log <em>(wp-content/debug.log)</em>.</label>
+							</div>
 						</td>
 					</tr>
 				</table>
@@ -436,6 +455,29 @@ else { ?>
 			<script>
 	
 				$(document).ready(function() {
+					
+					// Gestion du debug mode
+					var $debug		   = $('#debug'),
+						$debug_options = $('#debug_options'),
+						$debug_display = $debug_options.find('#debug_display');
+						$debug_log 	   = $debug_options.find('#debug_log');
+					
+										
+					$debug.change(function() {
+						if ( $debug.is(':checked') ) { 
+							$debug.parent().hide().siblings('p').hide();
+							$debug_options.slideDown();
+							$debug_display.attr('checked', true);
+							$debug_log.attr('checked', true);
+						}
+					});
+					
+					$('#debug_display, #debug_log').change(function(){
+						if( !$debug_display.is(':checked') && !$debug_log.is(':checked') ) {
+							$debug_options.slideUp().siblings().slideDown();
+							$debug.removeAttr('checked');
+						}					
+					});
 					
 					<?php
 					// On check si on doit pré-remplir le formulaire
@@ -488,6 +530,7 @@ else { ?>
 						/*-----------------------------------------------------------------------------------*/
 						/*	Activer le SEO
 						/*-----------------------------------------------------------------------------------*/
+						
 						if( typeof data.seo !='undefined' )
 							( parseInt(data.seo) == 1 ) ? $('#blog_public').attr('checked', 'checked') : $('#blog_public').removeAttr('checked');
 						
@@ -509,8 +552,19 @@ else { ?>
 						if( typeof data.wp_config.disallow_file_edit !='undefined' )
 							( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
 						
-						if( typeof data.wp_config.debug !='undefined' )
-							( parseInt(data.wp_config.debug) == 1 ) ? $('#debug').attr('checked', 'checked') : $('#debug').removeAttr('checked');
+						if( typeof data.wp_config.debug !='undefined' ) {
+							if ( parseInt(data.wp_config.debug) == 1 ) {
+								$debug.attr('checked', 'checked');
+								$debug.parent().hide().siblings('p').hide();
+								$debug_options.slideDown();
+								$debug_display.attr('checked', true);
+								$debug_log.attr('checked', true);
+							} // if
+							else {
+								$('#debug').removeAttr('checked');
+							} // else
+						} // if
+							
 						
 					<?php
 					} // if count( $data ) >= 0
@@ -616,6 +670,7 @@ else { ?>
 							$('#success').delay(500).show().append(data);
 						});
 					}
+					
 				});
 			</script>	
 		<?php	

@@ -1,4 +1,4 @@
-WP-Quick-Install 1.2.3
+WP-Quick-Install 1.2.4
 ================
 
 WP Quick Install est un script permettant d'installer WordPress en seul clic (téléchargement, décompression, installation de plugins, création base de données, etc...). 
@@ -7,6 +7,11 @@ Pour le mettre en place, téléchargez l'archive et rendez-vous sur le fichier *wp
 
 Changelog
 ================
+
+1.2.4
+-----------
+
+* Ajout de deux options de debug : "Afficher les erreurs à l'écran" (WP_DEBUG_DISPLAY) et "Ecrire les erreurs dans un fichier de log" (WP_DEBUG_LOG)
 
 1.2.3
 -----------
