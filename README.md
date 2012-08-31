@@ -12,6 +12,7 @@ Changelog
 -----------
 
 * Correction d'un bug sur le paramètre d'activation du SEO
+* Suppression automatique des fichiers licence.txt et readme.html
 
 1.2.2
 -----------
