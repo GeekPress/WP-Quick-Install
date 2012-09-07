@@ -13,7 +13,7 @@ Changelog
 
 * Possibilité de supprimer le contenu ajouter par défaut après l'installation de WordPress (article, page et liens).
 * Possibilité d'ajouter des pages sans passer par l'administration à partir du fichier data.ini 
-* Mise à jour du fichier php.ini
+* Mise à jour du fichier data.ini
 
 1.2.4
 -----------
