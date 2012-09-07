@@ -15,19 +15,30 @@ if( isset( $_GET['action'] ) ) {
 
 	switch( $_GET['action'] ) {
 
-		case "check_db_connection" :
-
+		case "check_before_upload" :
+			
+			$data = array();
+			
 			/*-----------------------------------------------------------------------------------*/
-			/*	On check si on arrive à se connecter à la base de données
+			/*	On check si on arrive à se connecter à la base de données et si WP n'est pas déjà installé
 			/*-----------------------------------------------------------------------------------*/
 
+			// Test BDD
 			try {
 			   $db = new PDO('mysql:host='. $_POST['dbhost'] .';dbname=' . $_POST['dbname'] , $_POST['uname'], $_POST['pwd'] );
 			} // try
 			catch(Exception $e) {
-				echo "error etablishing connection";
+				$data['db'] = "error etablishing connection";
 			} // catch
-
+			
+			
+			// Test WordPress
+			if( file_exists( $directory . 'wp-config.php' ) )
+				$data['wp'] = "error directory";
+			
+			// On send une réponse
+			echo json_encode( $data );
+			
 			break;
 
 		case "download_wp" :
@@ -47,47 +58,44 @@ if( isset( $_GET['action'] ) ) {
 			/*	On crée le dossier du site avec les fichiers et dossiers "wordpress"
 			/*-----------------------------------------------------------------------------------*/
 
-			// On check si WP n'est pas déjà installé
-			if( !file_exists( $directory . 'wp-config.php' ) ) {
 
-				// Si on souhaite mettre WordPress dans un sous-dossier, on le crée
-				if( !empty( $directory ) ) {
-					
-					// On crée le dossier
-					mkdir( $directory );
+			// Si on souhaite mettre WordPress dans un sous-dossier, on le crée
+			if( !empty( $directory ) ) {
+				
+				// On crée le dossier
+				mkdir( $directory );
 
-					// On met à jour les droits d'écriture du fichier
-					chmod( $directory , 0755 );
-				}
+				// On met à jour les droits d'écriture du fichier
+				chmod( $directory , 0755 );
+			}
+
+			
+			$zip = new ZipArchive;
+			
+			// On check si on peut se servir de l'archive
+			if( $zip->open( 'wordpress.zip' ) === true ) {
+				
+				// On dézip l'archive de WordPress	
+				$zip->extractTo( '.' );
+				$zip->close();
+				
+				// On scan le dossier
+				$files = scandir( 'wordpress' );
+				
+				// On supprime "." et ".." qui correspondent au dossier courant et parent
+				unset( $files[0], $files[1] );
+				
+				// On déplace les fichiers et les dossiers
+				foreach ( $files as $file )
+					rename(  'wordpress/' . $file, $directory . '/' . $file ); 
 
 				
-				$zip = new ZipArchive;
+				rmdir( 'wordpress' ); // On supprime le dossier wordpress
+				unlink( $directory . '/license.txt' ); // On supprime le fichier licence.txt
+				unlink( $directory . '/readme.html' ); // On supprime le fichier readme.html
 				
-				// On check si on peut se servir de l'archive
-				if( $zip->open( 'wordpress.zip' ) === true ) {
-					
-					// On dézip l'archive de WordPress	
-					$zip->extractTo( '.' );
-					$zip->close();
-					
-					// On scan le dossier
-					$files = scandir( 'wordpress' );
-					
-					// On supprime "." et ".." qui correspondent au dossier courant et parent
-					unset( $files[0], $files[1] );
-					
-					// On déplace les fichiers et les dossiers
-					foreach ( $files as $file )
-						rename(  'wordpress/' . $file, $directory . '/' . $file ); 
-	
-					
-					rmdir( 'wordpress' ); // On supprime le dossier wordpress
-					unlink( $directory . '/license.txt' ); // On supprime le fichier licence.txt
-					unlink( $directory . '/readme.html' ); // On supprime le fichier readme.html
-					
-				} // if
+			} // if
 
-			} // if!file_exists( $directory . 'wp-config.php' )
 			break;
 
 		case "install_plugins" :
@@ -263,7 +271,91 @@ if( isset( $_GET['action'] ) ) {
 				$url = trim( str_replace( basename(dirname(__FILE__)) . '/index.php/wp-admin/install.php?action=install_wp' , str_replace( '../', '', $directory ), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] ), '/' ); // On définit l'adresse à utiliser pour les options siteurl et home_url
 				update_option( 'siteurl', $url );
 				update_option( 'home', $url );
+				
+				/*-----------------------------------------------------------------------------------*/
+				/*	On supprime le contenu par défaut
+				/*-----------------------------------------------------------------------------------*/
+				
+				// Si on souhaite supprimer le contenu par défaut
+				if( $_POST['default_content'] == '1' ) {
+					
+					wp_delete_post( 1, true ); // On supprime l'article "Bonjour tout le monde"
+					wp_delete_post( 2, true ); // On supprime la page "Page d'exemple"
+					
+					wp_delete_link( 1 ); // On supprime le lien "Documentation"
+					wp_delete_link( 2 ); // On supprime le lien "Blog WordPress"
+					wp_delete_link( 3 ); // On supprime le lien "Forum d'entraide en Français"
+					wp_delete_link( 4 ); // On supprime le lien "Extensions"
+					wp_delete_link( 5 ); // On supprime le lien "Thèmes"
+					wp_delete_link( 6 ); // On supprime le lien "Remarque"
+					wp_delete_link( 7 ); // On supprime le lien "La planète WordPress"
+				}
+				
+				/*-----------------------------------------------------------------------------------*/
+				/*	On ajoute les pages renseignées dans le fichier data.ini
+				/*-----------------------------------------------------------------------------------*/
+				
+				global $wpdb;
 
+				// On pense bien à vérifier si le fichier data.ini existe
+				if( file_exists( 'data.ini' ) ) {
+					
+					// On récupère le tableau avec les pages
+					$file = parse_ini_file( 'data.ini' );
+					
+					// On vérifie qu'on a bien au moins une page
+					if( count( $file['pages'] ) >= 1 ) {
+						
+						$i=0;
+						foreach( $file['pages'] as $page ) {
+							
+							// On récupère la ligne complète de configuration de la page
+							$pre_config_page = explode( "-", $page );
+							$page = array();
+							
+							foreach( $pre_config_page as $config_page ) {
+								
+								// On récupère le titre de la page
+								if( preg_match( '#title::#', $config_page ) == 1 )
+									$page['title'] = str_replace( 'title::', '', $config_page );
+								
+								// On récupère le status de la page (publish, draft, etc...)
+								if( preg_match( '#status::#', $config_page ) == 1 )
+									$page['status'] = str_replace( 'status::', '', $config_page );
+								
+								// On récupère le contenu de la page
+								if( preg_match( '#content::#', $config_page ) == 1 )
+									$page['content'] = str_replace( 'contenu::', '', $config_page );
+								
+								// On récupère le slug de la page
+								if( preg_match( '#slug::#', $config_page ) == 1 )
+									$page['slug'] = str_replace( 'slug::', '', $config_page );
+									
+								// On récupère le titre de la page parente
+								if( preg_match( '#slug::#', $config_page ) == 1 )
+									$page['parent'] = str_replace( 'parent::', '', $config_page );
+							}
+							
+							// On crée la page
+							if( isset( $page['title'] ) && !empty( $page['title'] ) ) {
+								$args = array(
+												'post_parent'		=> isset( $page['parent'] ) ? get_page_by_title( $page['parent'] )->ID : 0,
+												'post_title' 		=> $page['title'],
+												'post_name'			=> isset( $page['slug'] ) ? $page['slug'] : sanitize_title( $page['title'] ),
+												'post_status' 		=> isset( $page['status'] ) ? $page['status'] : 'draft',
+												'post_author'		=> 1,
+												'post_type' 		=> 'page',
+												'post_date' 		=> date('Y-m-d H:i:s'),
+												'post_date_gmt' 	=> gmdate('Y-m-d H:i:s'),
+												'comment_status' 	=> 'closed',
+												'ping_status'		=> 'closed'
+								);					
+								wp_insert_post( $args );
+							}
+						}
+					}
+				}
+				
 				break;
 			
 			case "success" :
@@ -307,9 +399,8 @@ else { ?>
 			</div>
 			<form method="post" action="">
 	
-				<div class="alert alert-error" style="display:none;">
+				<div id="errors" class="alert alert-error" style="display:none;">
 					<strong>Attention !</strong>
-					<p style="margin-bottom:0px;">Erreur de connexion à la base de données. Merci de vérifier vos identifiants.</p>
 				</div>
 	
 				<h1>Avertissement</h1>
@@ -343,6 +434,13 @@ else { ?>
 						<th scope="row"><label for="prefix">Préfixe des tables</label></th>
 						<td><input name="prefix" id="prefix" type="text" value="wp_" size="25" class="required" /></td>
 						<td>Si vous souhaitez faire tourner plusieurs installations de WordPress sur une même base de données, modifiez ce réglage.</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="default_content">Contenu par défaut</label></th>
+						<td>
+							<label><input type="checkbox" name="default_content" id="default_content" value="1" checked="checked" /> Supprimer le contenu.</label>
+						</td>
+						<td>Si vous souhaitez supprimer le contenu ajouté par défaut par WordPress (article, page, commentaire et liens).</td>
 					</tr>
 				</table>
 	
@@ -387,7 +485,7 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="blog_public">Vie privée</label></th>
-						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked='checked' /> Demander aux moteurs de recherche d&rsquo;indexer ce site.</label></td>
+						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked="checked" /> Demander aux moteurs de recherche d&rsquo;indexer ce site.</label></td>
 					</tr>
 				</table>
 	
@@ -515,6 +613,9 @@ else { ?>
 						if( typeof data.db.pwd !='undefined' )
 							$('#pwd').val(data.db.pwd);
 						
+						if( typeof data.db.default_content !='undefined' )
+							( parseInt(data.db.default_content) == 1 ) ? $('#default_content').attr('checked', 'checked') : $('#default_content').removeAttr('checked');
+						
 						/*-----------------------------------------------------------------------------------*/
 						/*	Identifiants admin
 						/*-----------------------------------------------------------------------------------*/
@@ -574,47 +675,77 @@ else { ?>
 	
 					$('#submit').click( function() {
 	
-						var errors = false;
-	
+						errors = false;
+						
+						// On cache et on vide la div des errors
+						$('#errors').hide().html('<strong>Attention !</strong>');
+						
 						$('input.required').each(function(){
 							if( $.trim($(this).val()) == '' ) {
 								errors = true;
+								$(this).addClass('error');
 								$(this).css("border", "1px solid #FF0000");
 							} // if
 							else {
+								$(this).removeClass('error');
 								$(this).css("border", "1px solid #DFDFDF");
 							} // else
 						});
-	
-						// On check la connexion à la BDD
-						$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=check_db_connection', $('form').serialize(), function(data) {
-							if( data == "error etablishing connection" ) {
-								$('html,body').animate( { scrollTop: $('html,body').offset().top } , 'slow' );
-								$('.alert-error').show();
-							} // if
-							else {
+						
+						// Si on n'a pas d'erreur, on peut continuer
+						if( !errors ) {
+								
+							/*-----------------------------------------------------------------------------------*/
+							/*	On check la connexion à la BDD et si WP existe déjà ou non
+							/*  Si on n'a pas d'erreurs, on lance le script
+							/*-----------------------------------------------------------------------------------*/
+							
+							$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=check_before_upload', $('form').serialize(), function(data) {
+								
+								errors = false;
+								data = $.parseJSON(data);
+								
+								// On check si la connexion est bonne ou non
+								if( data.db == "error etablishing connection" ) {
+									
+									errors = true;
+									$('#errors').show().append('<p style="margin-bottom:0px;">&bull; Erreur de connexion à la base de données.</p>');
+								} // if
+								
+								
+								// On check si WP est déjà installé ou non
+								if( data.wp == "error directory" ) {
+									errors = true;
+									$('#errors').show().append('<p style="margin-bottom:0px;">&bull; WordPress semble déjà installé sur le dossier d\'installation que vous avez indiqué.</p>');
+								}
+								
 								// Si on n'a pas d'erreur, on peut continuer
 								if( !errors ) {
-									$('form').fadeOut( 'fast', function(){
+									$('form').fadeOut( 'fast', function() {
 										
+										$('.progress').show(); // On montre la barre de progression
+																				
 										// ETAPE 1
 										// On récupère l'archive de la dernière version de WordPress
 										$response.html("<p>Téléchargement de l'archive de WordPress en cours...</p>");
 										
-										// On montre la barre de progression
-										$('.progress').show();
-										
-										$.get('<?php echo $_SERVER['PHP_SELF'] ?>?action=download_wp', function(data) {
+										$.post('<?php echo $_SERVER['PHP_SELF'] ?>?action=download_wp', $('form').serialize(), function() {
 											step2();
 										});
 									});
 								} // if
 								else {
-									$('html,body').animate( { scrollTop: $( 'input.required:first' ).offset().top } , 'slow' );
+									// On a une erreur, on fait remonter l'utilisateur pour qu'il puisse la lire
+									$('html,body').animate( { scrollTop: $( 'html,body' ).offset().top } , 'slow' );
 								} // else
-								return false;
-							} // else
-						});
+							});
+
+						} // if
+						else {
+							// On a une erreur, on fait remonter l'utilisateur pour qu'il puisse la lire
+							$('html,body').animate( { scrollTop: $( 'input.error:first' ).offset().top-20 } , 'slow' );
+						} // else
+						return false;
 					});
 	
 					// ETAPE 2

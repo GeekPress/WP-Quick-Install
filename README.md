@@ -8,6 +8,13 @@ Pour le mettre en place, téléchargez l'archive et rendez-vous sur le fichier *wp
 Changelog
 ================
 
+1.2.5
+-----------
+
+* Possibilité de supprimer le contenu ajouter par défaut après l'installation de WordPress (article, page et liens).
+* Possibilité d'ajouter des pages sans passer par l'administration à partir du fichier data.ini 
+* Mise à jour du fichier php.ini
+
 1.2.4
 -----------
 
