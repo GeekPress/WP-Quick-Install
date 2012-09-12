@@ -598,35 +598,46 @@ else { ?>
 						/*-----------------------------------------------------------------------------------*/
 						/*	Identifiants BDD
 						/*-----------------------------------------------------------------------------------*/
-						if( typeof data.db.prefix !='undefined' )
-							$('#prefix').val(data.db.prefix);
 						
-						if( typeof data.db.dbname !='undefined' )
+						if( typeof data.db !='undefined' ) {
+							
+							if( typeof data.db.dbname !='undefined' )
 							$('#dbname').val(data.db.dbname);
 						
-						if( typeof data.db.dbhost !='undefined' )
-							$('#dbhost').val(data.db.dbhost);
-						
-						if( typeof data.db.uname !='undefined' )
-							$('#uname').val(data.db.uname);
-						
-						if( typeof data.db.pwd !='undefined' )
-							$('#pwd').val(data.db.pwd);
-						
-						if( typeof data.db.default_content !='undefined' )
-							( parseInt(data.db.default_content) == 1 ) ? $('#default_content').attr('checked', 'checked') : $('#default_content').removeAttr('checked');
+							if( typeof data.db.dbhost !='undefined' )
+								$('#dbhost').val(data.db.dbhost);
+							
+							if( typeof data.db.prefix !='undefined' )
+								$('#prefix').val(data.db.prefix);
+							
+							if( typeof data.db.uname !='undefined' )
+								$('#uname').val(data.db.uname);
+							
+							if( typeof data.db.pwd !='undefined' )
+								$('#pwd').val(data.db.pwd);
+							
+							if( typeof data.db.default_content !='undefined' )
+								( parseInt(data.db.default_content) == 1 ) ? $('#default_content').attr('checked', 'checked') : $('#default_content').removeAttr('checked');
+														
+						} //if
 						
 						/*-----------------------------------------------------------------------------------*/
 						/*	Identifiants admin
 						/*-----------------------------------------------------------------------------------*/
-						if( typeof data.admin.user_login !='undefined' )
-							$('#user_login').val(data.admin.user_login);
 						
-						if( typeof data.admin.password !='undefined' )
-							$('#admin_password').val(data.admin.password);
+						if( typeof data.admin !='undefined' ) {
+							
+							if( typeof data.admin.user_login !='undefined' )
+								$('#user_login').val(data.admin.user_login);
 						
-						if( typeof data.admin.email !='undefined' )
-							$('#admin_email').val(data.admin.email);
+							if( typeof data.admin.password !='undefined' )
+								$('#admin_password').val(data.admin.password);
+							
+							if( typeof data.admin.email !='undefined' )
+								$('#admin_email').val(data.admin.email);							
+						
+						} // if
+						
 						
 						/*-----------------------------------------------------------------------------------*/
 						/*	Activer le SEO
@@ -644,27 +655,34 @@ else { ?>
 						/*-----------------------------------------------------------------------------------*/
 						/*	Constantes du fichier wp-config.php
 						/*-----------------------------------------------------------------------------------*/
-						if( typeof data.wp_config.autosave_interval !='undefined' )
-							$('#autosave_interval').val(data.wp_config.autosave_interval);
 						
-						if( typeof data.wp_config.post_revisions !='undefined' )
-							( parseInt(data.wp_config.post_revisions) == 1 ) ? $('#post_revisions').attr('checked', 'checked') : $('#post_revisions').removeAttr('checked');
-						
-						if( typeof data.wp_config.disallow_file_edit !='undefined' )
-							( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
-						
-						if( typeof data.wp_config.debug !='undefined' ) {
-							if ( parseInt(data.wp_config.debug) == 1 ) {
-								$debug.attr('checked', 'checked');
-								$debug.parent().hide().siblings('p').hide();
-								$debug_options.slideDown();
-								$debug_display.attr('checked', true);
-								$debug_log.attr('checked', true);
-							} // if
-							else {
-								$('#debug').removeAttr('checked');
-							} // else
+						if( typeof data.wp_config !='undefined' ) {
+							
+							if( typeof data.wp_config.autosave_interval !='undefined' )
+								$('#autosave_interval').val(data.wp_config.autosave_interval);
+							
+							if( typeof data.wp_config.post_revisions !='undefined' )
+								( parseInt(data.wp_config.post_revisions) == 1 ) ? $('#post_revisions').attr('checked', 'checked') : $('#post_revisions').removeAttr('checked');
+							
+							if( typeof data.wp_config.disallow_file_edit !='undefined' )
+								( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
+							
+							if( typeof data.wp_config.debug !='undefined' ) {
+								if ( parseInt(data.wp_config.debug) == 1 ) {
+									$debug.attr('checked', 'checked');
+									$debug.parent().hide().siblings('p').hide();
+									$debug_options.slideDown();
+									$debug_display.attr('checked', true);
+									$debug_log.attr('checked', true);
+								} // if
+								else {
+									$('#debug').removeAttr('checked');
+								} // else
+							
 						} // if
+						
+						
+						} // if count( $data ) >= 1
 							
 						
 					<?php
