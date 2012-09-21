@@ -1,4 +1,4 @@
-WP-Quick-Install 1.2.6
+WP-Quick-Install 1.2.7
 ================
 
 WP Quick Install est un script permettant d'installer WordPress en seul clic (téléchargement, décompression, installation de plugins, création base de données, etc...). 
@@ -7,6 +7,15 @@ Pour le mettre en place, téléchargez l'archive et rendez-vous sur le fichier *wp
 
 Changelog
 ================
+
+1.2.7
+-----------
+
+* Possibilité d'ajouter des extensions Premium en mettant les archives dans le dossier "plugins" de "wp-quick-install"
+* Possibilité d'activer les extensions après l'installation
+* Suppression automatique de l'extension Hello Dolly
+* Possibilité d'ajouter un thème et de l'activer après l'installation
+* Possibilité de supprimer les thèmes Tweety Eleven et Tweenty Ten
 
 1.2.6
 -----------
