@@ -11,7 +11,7 @@ Changelog
 1.2.7
 -----------
 
-* Possibilité d'ajouter des extensions Premium en mettant les archives dans le dossier "plugins" de "wp-quick-install"
+* Possibilité d'ajouter des extensions Premium en mettant les archives dans le dossier *plugins* de *wp-quick-install*
 * Possibilité d'activer les extensions après l'installation
 * Suppression automatique de l'extension Hello Dolly
 * Possibilité d'ajouter un thème et de l'activer après l'installation
@@ -32,7 +32,7 @@ Changelog
 1.2.4
 -----------
 
-* Ajout de deux options de debug : "Afficher les erreurs à l'écran" (WP_DEBUG_DISPLAY) et "Ecrire les erreurs dans un fichier de log" (WP_DEBUG_LOG)
+* Ajout de deux options de debug : *Afficher les erreurs à l'écran* (WP_DEBUG_DISPLAY) et *Ecrire les erreurs dans un fichier de log* (WP_DEBUG_LOG)
 
 1.2.3
 -----------
