@@ -1,0 +1,4 @@
+<files data.ini>
+order allow,deny
+deny from all
+</files>
