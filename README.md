@@ -11,7 +11,7 @@ Changelog
 1.2.7.2
 -----------
 
-* Sécurité : interdition de l'accès et de la lecture du fichier data.ini à partir d'un navigateur Internet
+* Sécurité : interdition de l'accès et de la lecture du fichier data.ini à partir d'un navigateur 
 
 1.2.7.1
 -----------
