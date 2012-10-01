@@ -471,8 +471,13 @@ else { ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 	<head>
-		<title>WP Quick Install</title>
 		<meta charset="utf-8" />
+		<title>WP Quick Install</title>
+		
+		<!-- Aucune indexation du fichier sur Google ! -->
+		<meta name="robots" content="noindex, nofollow">
+		
+		<!-- Fichiers CSS -->
 		<link rel="stylesheet" href="css/style.min.css" type="text/css" media="screen" charset="utf-8">
 		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
 	</head>
