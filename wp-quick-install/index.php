@@ -129,29 +129,33 @@ if( isset( $_GET['action'] ) ) {
 						continue;
 
 					$constant = $match[1];
-					$padding  = $match[2];
 
 					switch ( $constant ) {
 						case 'WP_DEBUG'	   :
 
 							// Mode Debug
 							if( (int)$_POST['debug'] == 1 ) {
-								$line = "define('" . $constant . "'," . $padding . "'true');\r\n";
+								$line = "define('" . $constant . "', 'true');\r\n";
 
 								// Affichage des erreurs
 								if( (int)$_POST['debug_display'] == 1 ) {
 									$line .= "\r\n\n " . "/** Affichage des erreurs à l'écran */" . "\r\n";
-									$line .= "define('WP_DEBUG_DISPLAY'," . $padding . "'true');\r\n";
+									$line .= "define('WP_DEBUG_DISPLAY', 'true');\r\n";
 								} // if
 
 								// Ecriture des erreurs dans un fichier log
 								if( (int)$_POST['debug_log'] == 1 ) {
 									$line .= "\r\n\n " . "/** Ecriture des erreurs dans un fichier log */" . "\r\n";
-									$line .= "define('WP_DEBUG_LOG'," . $padding . "'true');\r\n";
+									$line .= "define('WP_DEBUG_LOG', 'true');\r\n";
 								}
 							} // if
 
 							// On ajoute les constantes supplémentaires
+							if( !empty($_POST['uploads']) ) {
+								$line .= "\r\n\n " . "/** Dossier de destination des fichiers uploadés */" . "\r\n";
+								$line .= "define('UPLOADS', '" . $_POST['uploads'] . "');";
+							} // if
+							
 							if( (int)$_POST['post_revisions'] == 1 ) {
 								$line .= "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
 								$line .= "define('WP_POST_REVISIONS', false);";
@@ -172,16 +176,16 @@ if( isset( $_GET['action'] ) ) {
 
 							break;
 						case 'DB_NAME'     :
-							$line = "define('" . $constant . "'," . $padding . "'" . addcslashes( $_POST[ 'dbname' ], "\\'" ) . "');\r\n";
+							$line = "define('" . $constant . "', '" . addcslashes( $_POST[ 'dbname' ], "\\'" ) . "');\r\n";
 							break;
 						case 'DB_USER'     :
-							$line = "define('" . $constant . "'," . $padding . "'" . addcslashes( $_POST['uname'], "\\'" ) . "');\r\n";
+							$line = "define('" . $constant . "', '" . addcslashes( $_POST['uname'], "\\'" ) . "');\r\n";
 							break;
 						case 'DB_PASSWORD' :
-							$line = "define('" . $constant . "'," . $padding . "'" . addcslashes( $_POST['pwd'], "\\'" ) . "');\r\n";
+							$line = "define('" . $constant . "', '" . addcslashes( $_POST['pwd'], "\\'" ) . "');\r\n";
 							break;
 						case 'DB_HOST'     :
-							$line = "define('" . $constant . "'," . $padding . "'" . addcslashes( $_POST['dbhost'], "\\'" ) . "');\r\n";
+							$line = "define('" . $constant . "', '" . addcslashes( $_POST['dbhost'], "\\'" ) . "');\r\n";
 							break;
 						case 'AUTH_KEY'         :
 						case 'SECURE_AUTH_KEY'  :
@@ -191,7 +195,7 @@ if( isset( $_GET['action'] ) ) {
 						case 'SECURE_AUTH_SALT' :
 						case 'LOGGED_IN_SALT'   :
 						case 'NONCE_SALT'       :
-							$line = "define('" . $constant . "'," . $padding . "'" . $secret_keys[$key++] . "');\r\n";
+							$line = "define('" . $constant . "', '" . $secret_keys[$key++] . "');\r\n";
 							break;
 					} // switch
 				} // foreach
@@ -249,7 +253,35 @@ if( isset( $_GET['action'] ) ) {
 					wp_delete_link( 6 ); // On supprime le lien "Remarque"
 					wp_delete_link( 7 ); // On supprime le lien "La planète WordPress"
 				}
-
+				
+				/*-----------------------------------------------------------------------------------*/
+				/*	On met à jour les options des médias
+				/*-----------------------------------------------------------------------------------*/
+				
+				if( !empty($_POST['thumbnail_size_w']) || !empty($_POST['thumbnail_size_h']) ) {
+					
+					update_option( 'thumbnail_size_w', (int)$_POST['thumbnail_size_w'] );
+					update_option( 'thumbnail_size_h', (int)$_POST['thumbnail_size_h'] );
+					update_option( 'thumbnail_crop', (int)$_POST['thumbnail_crop'] );
+					
+				}
+				
+				if( !empty($_POST['medium_size_w']) || !empty($_POST['medium_size_h'])) {
+					
+					update_option( 'medium_size_w', (int)$_POST['medium_size_w'] );
+					update_option( 'medium_size_h', (int)$_POST['medium_size_h'] );
+					
+				}
+				
+				if( !empty($_POST['large_size_w']) || !empty($_POST['large_size_h']) ) {
+					
+					update_option( 'large_size_w', (int)$_POST['large_size_w'] );
+					update_option( 'large_size_h', (int)$_POST['large_size_h'] );
+					
+				}
+				
+				 update_option( 'uploads_use_yearmonth_folders', (int)$_POST['uploads_use_yearmonth_folders']);
+				
 				/*-----------------------------------------------------------------------------------*/
 				/*	On ajoute les pages renseignées dans le fichier data.ini
 				/*-----------------------------------------------------------------------------------*/
@@ -626,16 +658,61 @@ else { ?>
 							<label for="plugins">Extensions Premium</label>
 							<p>Les archives doivent être présentes dans le dossier <em>plugins</em> présent à la racine de <em>wp-quick-install</em>.</p>
 						</th>
-						<td colspan="2"><label><input type="checkbox" id="plugins_premium" name="plugins_premium" value="1" /> Installer les extensions après l'installation de WordPress.</label></td>
+						<td><label><input type="checkbox" id="plugins_premium" name="plugins_premium" value="1" /> Installer les extensions après l'installation de WordPress.</label></td>
 					</tr>
 					<tr>
 						<th scope="row">
 							<label for="plugins">Activation automatique</label>
 						</th>
-						<td colspan="2"><label><input type="checkbox" name="activate_plugins" id="activate_plugins" value="1" /> Activer les extensions après l'installation de WordPress.</label></td>
+						<td><label><input type="checkbox" name="activate_plugins" id="activate_plugins" value="1" /> Activer les extensions après l'installation de WordPress.</label></td>
 					</tr>
 				</table>
-
+				
+				<h1>Informations médias</h1>
+				
+				<p>Les tailles précisées ci-dessous déterminent les dimensions maximales (en pixels) à utiliser lors de l’insertion d’une image dans le corps d’un article.</p>
+				
+				<table class="form-table">
+					<tr>
+						<th scope="row">Taille des miniatures</th>
+						<td>
+							<label for="thumbnail_size_w">Largeur</label>
+							<input name="thumbnail_size_w" type="text" id="thumbnail_size_w" value="0" />
+							<label for="thumbnail_size_h">Hauteur</label>
+							<input name="thumbnail_size_h" type="text" id="thumbnail_size_h" value="0" /><br>
+							<label for="thumbnail_crop" class="small-text"><input name="thumbnail_crop" type="checkbox" id="thumbnail_crop" value="1" checked="checked" />Recadrer les images pour parvenir aux dimensions exactes</label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Taille moyenne</th>
+						<td>
+							<label for="medium_size_w">Largeur</label>
+							<input name="medium_size_w" type="text" id="medium_size_w" value="0" />
+							<label for="medium_size_h">Hauteur</label>
+							<input name="medium_size_h" type="text" id="medium_size_h" value="0" /><br>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Grande moyenne</th>
+						<td>
+							<label for="large_size_w">Largeur</label>
+							<input name="large_size_w" type="text" id="large_size_w" value="0" />
+							<label for="large_size_h">Hauteur</label>
+							<input name="large_size_h" type="text" id="large_size_h" value="0" /><br>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="upload_dir">Stocker les fichiers envoyés dans ce dossier</label>
+							<p>Par défaut, les médias sont stockés dans le dossier <em>wp-content/uploads</em></p>
+						</th>
+						<td>
+							<input type="text" id="upload_dir" name="upload_dir" size="46" value="" /><br/>
+							<label for="uploads_use_yearmonth_folders" class="small-text"><input name="uploads_use_yearmonth_folders" type="checkbox" id="uploads_use_yearmonth_folders" value="1" checked="checked" />Organiser mes fichiers envoyés dans des dossiers mensuels et annuels</label>
+						</td>
+					</tr>
+				</table>
+				
 				<h1>Informations wp-config.php</h1>
 				<p>Vous devez choisir ci-dessous les constantes supplémentaires à ajouter dans le fichier <strong>wp-config.php</strong>.</p>
 
@@ -644,18 +721,18 @@ else { ?>
 						<th scope="row">
 							<label for="plugins">Révisions</label>
 						</th>
-						<td colspan="2"><label><input type="checkbox" id="post_revisions" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
+						<td><label><input type="checkbox" id="post_revisions" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
 					</tr>
 					<tr>
 						<th scope="row">
 							<label for="plugins">Éditeur</label>
 						</th>
-						<td colspan="2"><label><input type="checkbox" id="disallow_file_edit" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
+						<td><label><input type="checkbox" id="disallow_file_edit" name="disallow_file_edit" value="1" checked='checked' /> Désactiver l'éditeur de thème et des extensions.</label></td>
 					</tr>
 					<tr>
 						<th scope="row">
 							<label for="autosave_interval">Sauvegarde automatique</label>
-							<p>L'intervalle des sauvegardes sera de 60 secondes si vous laissez ce champ vide.</p>
+							<p>Par défaut, l'intervalle des sauvegardes est de 60 secondes.</p>
 						</th>
 						<td><input name="autosave_interval" id="autosave_interval" type="text" size="25" value="7200" /> secondes</td>
 					</tr>
@@ -663,7 +740,7 @@ else { ?>
 						<th scope="row">
 							<label for="debug">Mode Debug</label>
 						</th>
-						<td colspan="2">
+						<td>
 							<label><input type="checkbox" name="debug" id="debug" value="1" /> Activer le mode deboguage de WordPress.</label>
 							<p>En cochant cette case, vous activez l'affichage des notifications d'erreurs de WordPress.</p>
 
@@ -715,12 +792,14 @@ else { ?>
 						/*-----------------------------------------------------------------------------------*/
 						/*	Dossier d'installation
 						/*-----------------------------------------------------------------------------------*/
+						
 						if( typeof data.directory !='undefined' )
 							$('#directory').val(data.directory);
 
 						/*-----------------------------------------------------------------------------------*/
 						/*	Titre du blog
 						/*-----------------------------------------------------------------------------------*/
+						
 						if( typeof data.title !='undefined' )
 							$('#weblog_title').val(data.title);
 
@@ -798,13 +877,49 @@ else { ?>
 
 						if( typeof data.activate_plugins !='undefined' )
 							( parseInt(data.activate_plugins) == 1 ) ? $('#activate_plugins').attr('checked', 'checked') : $('#activate_plugins').removeAttr('checked');
-
+						
+						/*-----------------------------------------------------------------------------------*/
+						/*	Médias
+						/*-----------------------------------------------------------------------------------*/
+						
+						if( typeof data.uploads !='undefined' ) {
+							
+							if( typeof data.uploads.thumbnail_size_w !='undefined' )
+								$('#thumbnail_size_w').val(parseInt(data.uploads.thumbnail_size_w));
+							
+							if( typeof data.uploads.thumbnail_size_h !='undefined' )
+								$('#thumbnail_size_h').val(parseInt(data.uploads.thumbnail_size_h));
+							
+							if( typeof data.uploads.thumbnail_crop !='undefined' )
+								( parseInt(data.uploads.thumbnail_crop) == 1 ) ? $('#thumbnail_crop').attr('checked', 'checked') : $('#thumbnail_crop').removeAttr('checked');
+							
+							if( typeof data.uploads.medium_size_w !='undefined' )
+								$('#medium_size_w').val(parseInt(data.uploads.medium_size_w));
+							
+							if( typeof data.uploads.medium_size_h !='undefined' )
+								$('#medium_size_h').val(parseInt(data.uploads.medium_size_h));
+							
+							if( typeof data.uploads.large_size_w !='undefined' )
+								$('#large_size_w').val(parseInt(data.uploads.large_size_w));
+							
+							if( typeof data.uploads.large_size_h !='undefined' )
+								$('#large_size_h').val(parseInt(data.uploads.large_size_h));	
+								
+							if( typeof data.uploads.upload_dir !='undefined' )
+								$('#upload_dir').val(data.uploads.upload_dir);
+							
+							if( typeof data.uploads.uploads_use_yearmonth_folders !='undefined' )
+								( parseInt(data.uploads.uploads_use_yearmonth_folders) == 1 ) ? $('#uploads_use_yearmonth_folders').attr('checked', 'checked') : $('#uploads_use_yearmonth_folders').removeAttr('checked');
+							
+						}
+						
+						
 						/*-----------------------------------------------------------------------------------*/
 						/*	Constantes du fichier wp-config.php
 						/*-----------------------------------------------------------------------------------*/
 
 						if( typeof data.wp_config !='undefined' ) {
-
+								
 							if( typeof data.wp_config.autosave_interval !='undefined' )
 								$('#autosave_interval').val(data.wp_config.autosave_interval);
 
