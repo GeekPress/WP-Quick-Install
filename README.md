@@ -8,6 +8,13 @@ Pour le mettre en place, téléchargez l'archive et rendez-vous sur le fichier *wp
 Changelog
 ================
 
+1.2.8.1
+-----------
+
+* Possibilité de déclarer des articles à ajouter directement via le fichier data.ini
+* Correction du bug sur l'ajout d'articles
+* Possibilité de choisir le nombre de révisions par article
+
 1.2.8
 -----------
 
