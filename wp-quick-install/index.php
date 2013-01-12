@@ -155,10 +155,10 @@ if( isset( $_GET['action'] ) ) {
 								$line .= "\r\n\n " . "/** Dossier de destination des fichiers uploadés */" . "\r\n";
 								$line .= "define('UPLOADS', '" . $_POST['uploads'] . "');";
 							} // if
-							
-							if( (int)$_POST['post_revisions'] == 1 ) {
+
+							if( (int)$_POST['post_revisions'] >= 0 ) {
 								$line .= "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
-								$line .= "define('WP_POST_REVISIONS', false);";
+								$line .= "define('WP_POST_REVISIONS', " . (int)$_POST['post_revisions'] . ");";
 							} // if
 
 							if( (int)$_POST['disallow_file_edit'] == 1 ) {
@@ -166,7 +166,7 @@ if( isset( $_GET['action'] ) ) {
 								$line .= "define('DISALLOW_FILE_EDIT', false);";
 							} // if
 
-							if( (int)$_POST['autosave_interval'] >= 1 ) {
+							if( (int)$_POST['autosave_interval'] >= 60 ) {
 								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
 								$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
 							} // if
@@ -253,40 +253,38 @@ if( isset( $_GET['action'] ) ) {
 					wp_delete_link( 6 ); // On supprime le lien "Remarque"
 					wp_delete_link( 7 ); // On supprime le lien "La planète WordPress"
 				}
-				
+
 				/*-----------------------------------------------------------------------------------*/
 				/*	On met à jour les options des médias
 				/*-----------------------------------------------------------------------------------*/
-				
+
 				if( !empty($_POST['thumbnail_size_w']) || !empty($_POST['thumbnail_size_h']) ) {
-					
+
 					update_option( 'thumbnail_size_w', (int)$_POST['thumbnail_size_w'] );
 					update_option( 'thumbnail_size_h', (int)$_POST['thumbnail_size_h'] );
 					update_option( 'thumbnail_crop', (int)$_POST['thumbnail_crop'] );
-					
+
 				}
-				
+
 				if( !empty($_POST['medium_size_w']) || !empty($_POST['medium_size_h'])) {
-					
+
 					update_option( 'medium_size_w', (int)$_POST['medium_size_w'] );
 					update_option( 'medium_size_h', (int)$_POST['medium_size_h'] );
-					
+
 				}
-				
+
 				if( !empty($_POST['large_size_w']) || !empty($_POST['large_size_h']) ) {
-					
+
 					update_option( 'large_size_w', (int)$_POST['large_size_w'] );
 					update_option( 'large_size_h', (int)$_POST['large_size_h'] );
-					
+
 				}
-				
-				 update_option( 'uploads_use_yearmonth_folders', (int)$_POST['uploads_use_yearmonth_folders']);
-				
+
+				 update_option( 'uploads_use_yearmonth_folders', (int)$_POST['uploads_use_yearmonth_folders'] );
+
 				/*-----------------------------------------------------------------------------------*/
 				/*	On ajoute les pages renseignées dans le fichier data.ini
 				/*-----------------------------------------------------------------------------------*/
-
-				global $wpdb;
 
 				// On pense bien à vérifier si le fichier data.ini existe
 				if( file_exists( 'data.ini' ) ) {
@@ -295,55 +293,62 @@ if( isset( $_GET['action'] ) ) {
 					$file = parse_ini_file( 'data.ini' );
 
 					// On vérifie qu'on a bien au moins une page
-					if( count( $file['pages'] ) >= 1 ) {
+					if( count( $file['posts'] ) >= 1 ) {
 
-						foreach( $file['pages'] as $page ) {
+						foreach( $file['posts'] as $post ) {
 
 							// On récupère la ligne complète de configuration de la page
-							$pre_config_page = explode( "-", $page );
-							$page = array();
+							$pre_config_post = explode( "-", $post );
+							$post = array();
 
-							foreach( $pre_config_page as $config_page ) {
+							foreach( $pre_config_post as $config_post ) {
 
-								// On récupère le titre de la page
-								if( preg_match( '#title::#', $config_page ) == 1 )
-									$page['title'] = str_replace( 'title::', '', $config_page );
+								// On récupère le titre de l'article
+								if( preg_match( '#title::#', $config_post ) == 1 )
+									$post['title'] = str_replace( 'title::', '', $config_post );
 
 								// On récupère le status de la page (publish, draft, etc...)
-								if( preg_match( '#status::#', $config_page ) == 1 )
-									$page['status'] = str_replace( 'status::', '', $config_page );
+								if( preg_match( '#status::#', $config_post ) == 1 )
+									$post['status'] = str_replace( 'status::', '', $config_post );
 
-								// On récupère le contenu de la page
-								if( preg_match( '#content::#', $config_page ) == 1 )
-									$page['content'] = str_replace( 'contenu::', '', $config_page );
+								// On récupère le post type de l'article (post, page ou custom post types ...)
+								if( preg_match( '#type::#', $config_post ) == 1 )
+									$post['type'] = str_replace( 'type::', '', $config_post );
 
-								// On récupère le slug de la page
-								if( preg_match( '#slug::#', $config_page ) == 1 )
-									$page['slug'] = str_replace( 'slug::', '', $config_page );
+								// On récupère le contenu de l'article
+								if( preg_match( '#content::#', $config_post ) == 1 )
+									$post['content'] = str_replace( 'content::', '', $config_post );
+
+								// On récupère le slug de l'article
+								if( preg_match( '#slug::#', $config_post ) == 1 )
+									$post['slug'] = str_replace( 'slug::', '', $config_post );
 
 								// On récupère le titre de la page parente
-								if( preg_match( '#slug::#', $config_page ) == 1 )
-									$page['parent'] = str_replace( 'parent::', '', $config_page );
+								if( preg_match( '#parent::#', $config_post ) == 1 )
+									$post['parent'] = str_replace( 'parent::', '', $config_post );
 
 							} // foreach
 
-							// On crée la page
-							if( isset( $page['title'] ) && !empty( $page['title'] ) ) {
+							if( isset( $post['title'] ) && !empty( $post['title'] ) ) {
+								
+								// On crée la page
 								$args = array(
-												'post_parent'		=> isset( $page['parent'] ) ? get_page_by_title( $page['parent'] )->ID : 0,
-												'post_title' 		=> $page['title'],
-												'post_name'			=> isset( $page['slug'] ) ? $page['slug'] : sanitize_title( $page['title'] ),
-												'post_status' 		=> isset( $page['status'] ) ? $page['status'] : 'draft',
-												'post_author'		=> 1,
-												'post_type' 		=> 'page',
-												'post_date' 		=> date('Y-m-d H:i:s'),
-												'post_date_gmt' 	=> gmdate('Y-m-d H:i:s'),
-												'comment_status' 	=> 'closed',
-												'ping_status'		=> 'closed'
+									'post_title' 		=> trim( $post['title'] ),
+									'post_name'			=> $post['slug'],
+									'post_content'		=> trim( $post['content'] ),
+									'post_status' 		=> $post['status'],
+									'post_type' 		=> $post['type'],
+									'post_parent'		=> get_page_by_title( trim( $post['parent'] ) )->ID,
+									'post_author'		=> 1,
+									'post_date' 		=> date('Y-m-d H:i:s'),
+									'post_date_gmt' 	=> gmdate('Y-m-d H:i:s'),
+									'comment_status' 	=> 'closed',
+									'ping_status'		=> 'closed'
 								);
 								wp_insert_post( $args );
 
-							} // if
+							}
+
 						} // foreach
 					} // if count( $file['pages'] ) >= 1 )
 				} // if file_exists( 'data.ini' )
@@ -354,7 +359,7 @@ if( isset( $_GET['action'] ) ) {
 
 				/** Load WordPress Bootstrap */
 				require_once( $directory . 'wp-load.php' );
-				
+
 				/** Load WordPress Administration Upgrade API */
 				require_once( $directory . 'wp-admin/includes/upgrade.php' );
 
@@ -365,37 +370,38 @@ if( isset( $_GET['action'] ) ) {
 
 				// On check d'abord si l'archive theme.zip existe
 				if( file_exists( 'theme.zip' ) ) {
-					
+
 					$zip = new ZipArchive;
 
 					// On check si on peut se servir de l'archive
 					if( $zip->open( 'theme.zip' ) === true ) {
-						
+
 						// On récupère le nom du dossier du thème
-						$stat = $zip->statIndex( 0 ); 
-						$theme_name = str_replace('/', '' , $stat['name']); 
-						
+						$stat = $zip->statIndex( 0 );
+						$theme_name = str_replace('/', '' , $stat['name']);
+
 						// On dézip l'archive dans le dossier des plugins
 						$zip->extractTo( $directory . 'wp-content/themes/' );
 						$zip->close();
-						
+
 						// On active le thème
-						// Note : le thème est automatiquement activé si l'utilisateur demande les suppressions des thèmes par défaut			
+						// Note : le thème est automatiquement activé si l'utilisateur demande les suppressions des thèmes par défaut
 						if( $_POST['activate_theme'] == 1 || $_POST['delete_default_themes'] == 1 )
 							switch_theme( $theme_name, $theme_name );
-							
-						
-						// On supprime les thèmes TwentyEleven et TweentyTen
+
+
+						// On supprime les thèmes Tweenty Twelve, TwentyEleven et TweentyTen
 						if( $_POST['delete_default_themes'] == 1 ) {
 
+							delete_theme( 'twentytwelve' ); // On supprime le thème Tweenty Twelve
 							delete_theme( 'twentyeleven' ); // On supprime le thème Tweenty Eleven
 							delete_theme( 'twentyten' ); // On supprile le thème Tweenty Ten
-		
+
 						} // if
-						
+
 						// Suppression du dossier _MACOSX (bug sur Mac lors de la décompression de l'archive)
 						delete_theme( '__MACOSX' );
-						
+
 					} // if
 				} // if
 
@@ -505,10 +511,10 @@ else { ?>
 	<head>
 		<meta charset="utf-8" />
 		<title>WP Quick Install</title>
-		
+
 		<!-- Aucune indexation du fichier sur Google ! -->
 		<meta name="robots" content="noindex, nofollow">
-		
+
 		<!-- Fichiers CSS -->
 		<link rel="stylesheet" href="css/style.min.css" type="text/css" media="screen" charset="utf-8">
 		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
@@ -636,7 +642,7 @@ else { ?>
 						<th scope="row">
 							<label for="delete_default_themes">Thèmes par défaut</label>
 						</th>
-						<td colspan="2"><label><input type="checkbox" id="delete_default_themes" name="delete_default_themes" value="1" /> Supprimer les thèmes <em>TwentyTen</em> et <em>TwentyEleven</em>.</label></td>
+						<td colspan="2"><label><input type="checkbox" id="delete_default_themes" name="delete_default_themes" value="1" /> Supprimer les thèmes <em>Tweenty Twelve</em>, <em>TwentyTen</em> et <em>TwentyEleven</em>.</label></td>
 					</tr>
 				</table>
 
@@ -667,19 +673,19 @@ else { ?>
 						<td><label><input type="checkbox" name="activate_plugins" id="activate_plugins" value="1" /> Activer les extensions après l'installation de WordPress.</label></td>
 					</tr>
 				</table>
-				
+
 				<h1>Informations médias</h1>
-				
+
 				<p>Les tailles précisées ci-dessous déterminent les dimensions maximales (en pixels) à utiliser lors de l’insertion d’une image dans le corps d’un article.</p>
-				
+
 				<table class="form-table">
 					<tr>
 						<th scope="row">Taille des miniatures</th>
 						<td>
 							<label for="thumbnail_size_w">Largeur</label>
-							<input name="thumbnail_size_w" type="text" id="thumbnail_size_w" value="0" />
+							<input name="thumbnail_size_w" type="number" id="thumbnail_size_w" min="0" step="10" value="0" size="5" />
 							<label for="thumbnail_size_h">Hauteur</label>
-							<input name="thumbnail_size_h" type="text" id="thumbnail_size_h" value="0" /><br>
+							<input name="thumbnail_size_h" type="number" id="thumbnail_size_h" min="0" step="10" value="0" size="5" /><br>
 							<label for="thumbnail_crop" class="small-text"><input name="thumbnail_crop" type="checkbox" id="thumbnail_crop" value="1" checked="checked" />Recadrer les images pour parvenir aux dimensions exactes</label>
 						</td>
 					</tr>
@@ -687,18 +693,18 @@ else { ?>
 						<th scope="row">Taille moyenne</th>
 						<td>
 							<label for="medium_size_w">Largeur</label>
-							<input name="medium_size_w" type="text" id="medium_size_w" value="0" />
+							<input name="medium_size_w" type="number" id="medium_size_w" min="0" step="10" value="0" size="5" />
 							<label for="medium_size_h">Hauteur</label>
-							<input name="medium_size_h" type="text" id="medium_size_h" value="0" /><br>
+							<input name="medium_size_h" type="number" id="medium_size_h" min="0" step="10" value="0" size="5" /><br>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row">Grande moyenne</th>
 						<td>
 							<label for="large_size_w">Largeur</label>
-							<input name="large_size_w" type="text" id="large_size_w" value="0" />
+							<input name="large_size_w" type="number" id="large_size_w" min="0" step="10" value="0" size="5" />
 							<label for="large_size_h">Hauteur</label>
-							<input name="large_size_h" type="text" id="large_size_h" value="0" /><br>
+							<input name="large_size_h" type="number" id="large_size_h" min="0" step="10" value="0" size="5" /><br>
 						</td>
 					</tr>
 					<tr>
@@ -712,16 +718,19 @@ else { ?>
 						</td>
 					</tr>
 				</table>
-				
+
 				<h1>Informations wp-config.php</h1>
 				<p>Vous devez choisir ci-dessous les constantes supplémentaires à ajouter dans le fichier <strong>wp-config.php</strong>.</p>
 
 				<table class="form-table">
 					<tr>
 						<th scope="row">
-							<label for="plugins">Révisions</label>
+							<label for="post_revisions">Révisions</label>
+							<p>Par défaut, le nombre de révisions d'article est illimité.</p>
 						</th>
-						<td><label><input type="checkbox" id="post_revisions" name="post_revisions" value="1" checked='checked' /> Désactiver les révisions automatiques d'articles.</label></td>
+						<td>
+							<input name="post_revisions" id="post_revisions" type="number" min="0" value="0" />
+						</td>
 					</tr>
 					<tr>
 						<th scope="row">
@@ -734,7 +743,7 @@ else { ?>
 							<label for="autosave_interval">Sauvegarde automatique</label>
 							<p>Par défaut, l'intervalle des sauvegardes est de 60 secondes.</p>
 						</th>
-						<td><input name="autosave_interval" id="autosave_interval" type="text" size="25" value="7200" /> secondes</td>
+						<td><input name="autosave_interval" id="autosave_interval" type="number" min="60" step="60" size="25" value="7200" /> secondes</td>
 					</tr>
 					<tr>
 						<th scope="row">
@@ -792,14 +801,14 @@ else { ?>
 						/*-----------------------------------------------------------------------------------*/
 						/*	Dossier d'installation
 						/*-----------------------------------------------------------------------------------*/
-						
+
 						if( typeof data.directory !='undefined' )
 							$('#directory').val(data.directory);
 
 						/*-----------------------------------------------------------------------------------*/
 						/*	Titre du blog
 						/*-----------------------------------------------------------------------------------*/
-						
+
 						if( typeof data.title !='undefined' )
 							$('#weblog_title').val(data.title);
 
@@ -853,18 +862,18 @@ else { ?>
 
 						if( typeof data.seo !='undefined' )
 							( parseInt(data.seo) == 1 ) ? $('#blog_public').attr('checked', 'checked') : $('#blog_public').removeAttr('checked');
-						
-						
+
+
 						/*-----------------------------------------------------------------------------------*/
 						/*	Thèmes
 						/*-----------------------------------------------------------------------------------*/
-						
+
 						if( typeof data.activate_theme !='undefined' )
 							( parseInt(data.activate_theme) == 1 ) ? $('#activate_theme').attr('checked', 'checked') : $('#activate_theme').removeAttr('checked');
 
 						if( typeof data.delete_default_themes !='undefined' )
 							( parseInt(data.delete_default_themes) == 1 ) ? $('#delete_default_themes').attr('checked', 'checked') : $('#delete_default_themes').removeAttr('checked');
-						
+
 						/*-----------------------------------------------------------------------------------*/
 						/*	Plugins
 						/*-----------------------------------------------------------------------------------*/
@@ -877,54 +886,54 @@ else { ?>
 
 						if( typeof data.activate_plugins !='undefined' )
 							( parseInt(data.activate_plugins) == 1 ) ? $('#activate_plugins').attr('checked', 'checked') : $('#activate_plugins').removeAttr('checked');
-						
+
 						/*-----------------------------------------------------------------------------------*/
 						/*	Médias
 						/*-----------------------------------------------------------------------------------*/
-						
+
 						if( typeof data.uploads !='undefined' ) {
-							
+
 							if( typeof data.uploads.thumbnail_size_w !='undefined' )
 								$('#thumbnail_size_w').val(parseInt(data.uploads.thumbnail_size_w));
-							
+
 							if( typeof data.uploads.thumbnail_size_h !='undefined' )
 								$('#thumbnail_size_h').val(parseInt(data.uploads.thumbnail_size_h));
-							
+
 							if( typeof data.uploads.thumbnail_crop !='undefined' )
 								( parseInt(data.uploads.thumbnail_crop) == 1 ) ? $('#thumbnail_crop').attr('checked', 'checked') : $('#thumbnail_crop').removeAttr('checked');
-							
+
 							if( typeof data.uploads.medium_size_w !='undefined' )
 								$('#medium_size_w').val(parseInt(data.uploads.medium_size_w));
-							
+
 							if( typeof data.uploads.medium_size_h !='undefined' )
 								$('#medium_size_h').val(parseInt(data.uploads.medium_size_h));
-							
+
 							if( typeof data.uploads.large_size_w !='undefined' )
 								$('#large_size_w').val(parseInt(data.uploads.large_size_w));
-							
+
 							if( typeof data.uploads.large_size_h !='undefined' )
-								$('#large_size_h').val(parseInt(data.uploads.large_size_h));	
-								
+								$('#large_size_h').val(parseInt(data.uploads.large_size_h));
+
 							if( typeof data.uploads.upload_dir !='undefined' )
 								$('#upload_dir').val(data.uploads.upload_dir);
-							
+
 							if( typeof data.uploads.uploads_use_yearmonth_folders !='undefined' )
 								( parseInt(data.uploads.uploads_use_yearmonth_folders) == 1 ) ? $('#uploads_use_yearmonth_folders').attr('checked', 'checked') : $('#uploads_use_yearmonth_folders').removeAttr('checked');
-							
+
 						}
-						
-						
+
+
 						/*-----------------------------------------------------------------------------------*/
 						/*	Constantes du fichier wp-config.php
 						/*-----------------------------------------------------------------------------------*/
 
 						if( typeof data.wp_config !='undefined' ) {
-								
+
 							if( typeof data.wp_config.autosave_interval !='undefined' )
 								$('#autosave_interval').val(data.wp_config.autosave_interval);
 
 							if( typeof data.wp_config.post_revisions !='undefined' )
-								( parseInt(data.wp_config.post_revisions) == 1 ) ? $('#post_revisions').attr('checked', 'checked') : $('#post_revisions').removeAttr('checked');
+								$('#post_revisions').val(data.uploads.upload_dir);
 
 							if( typeof data.wp_config.disallow_file_edit !='undefined' )
 								( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
