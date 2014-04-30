@@ -393,6 +393,8 @@ if( isset( $_GET['action'] ) ) {
 						// On supprime les thèmes Tweenty Twelve, TwentyEleven et TweentyTen
 						if( $_POST['delete_default_themes'] == 1 ) {
 
+							delete_theme( 'twentyfourteen' ); // On supprime le thème Tweenty Fourteen
+							delete_theme( 'twentythirteen' ); // On supprime le thème Tweenty Thirteen
 							delete_theme( 'twentytwelve' ); // On supprime le thème Tweenty Twelve
 							delete_theme( 'twentyeleven' ); // On supprime le thème Tweenty Eleven
 							delete_theme( 'twentyten' ); // On supprile le thème Tweenty Ten
