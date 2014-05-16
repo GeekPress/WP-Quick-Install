@@ -935,7 +935,7 @@ else { ?>
 								$('#autosave_interval').val(data.wp_config.autosave_interval);
 
 							if( typeof data.wp_config.post_revisions !='undefined' )
-								$('#post_revisions').val(data.uploads.upload_dir);
+								$('#post_revisions').val(data.wp_config.post_revisions);
 
 							if( typeof data.wp_config.disallow_file_edit !='undefined' )
 								( parseInt(data.wp_config.disallow_file_edit) == 1 ) ? $('#disallow_file_edit').attr('checked', 'checked') : $('#disallow_file_edit').removeAttr('checked');
