@@ -1,93 +1,102 @@
-WP-Quick-Install 1.2.8.1
+WP-Quick-Install 1.3
 ================
 
-WP Quick Install est un script permettant d'installer WordPress en seul clic (téléchargement, décompression, installation de plugins, création base de données, etc...). 
+WP Quick Install is the easiest way to install WordPress.
 
-Pour le mettre en place, téléchargez l'archive et rendez-vous sur le fichier *wp-quick-install/index.php*
+A lightweight script which automatically downloads and install WordPress, plugins and themes you want.
+
+Simply download the .zip archive et go to *wp-quick-install/index.php*
 
 Changelog
 ================
 
+1.3
+-----------
+
+* Possiblity to select WordPress language installation
+* Permaling management
+
+
 1.2.8.1
 -----------
 
-* Possibilité de déclarer des articles à ajouter directement via le fichier data.ini
-* Correction du bug sur l'ajout d'articles
-* Possibilité de choisir le nombre de révisions par article
+* You can now declare articles to be generated via data.ini file
+* Fix bug on new articles
+* You can now select the revision by articles
 
 1.2.8
 -----------
 
-* Gestion des médias (tailles des images et dossier de destination)
+* Media management
 
 1.2.7.2
 -----------
 
-* Sécurité : interdition de l'accès et de la lecture du fichier data.ini à partir d'un navigateur 
+* Security : Forbiden access to data.ini from the browser
 
 1.2.7.1
 -----------
 
-* Ajout de la balise robots avec "noindex, nofollow".
+* noindex nofollow tag.
 
 1.2.7
 -----------
 
-* Possibilité d'ajouter des extensions Premium en mettant les archives dans le dossier *plugins* de *wp-quick-install*
-* Possibilité d'activer les extensions après l'installation
-* Suppression automatique de l'extension Hello Dolly
-* Possibilité d'ajouter un thème et de l'activer après l'installation
-* Possibilité de supprimer les thèmes Tweety Eleven et Tweenty Ten
+* Premium extension by adding archives in plugins folder
+* You can enable extension after installation
+* Auto supression of Hello Dolly extension
+* You can add a theme and enable it
+* PYou can delete Twenty Elever and Twenty Ten
 
 1.2.6
 -----------
 
-* Correction d'un bug JavaScript en cas de non utilisation du fichier data.ini
+* Fix a JS bug with data.ini
 
 1.2.5
 -----------
 
-* Possibilité de supprimer le contenu ajouter par défaut après l'installation de WordPress (article, page et liens).
-* Possibilité d'ajouter des pages sans passer par l'administration à partir du fichier data.ini 
-* Mise à jour du fichier data.ini
+* You can delete the default content added by WordPress
+* You can add new pages with data.ini
+* Data.ini update
 
 1.2.4
 -----------
 
-* Ajout de deux options de debug : *Afficher les erreurs à l'écran* (WP_DEBUG_DISPLAY) et *Ecrire les erreurs dans un fichier de log* (WP_DEBUG_LOG)
+* Two new debug options : *Display errors* (WP_DEBUG_DISPLAY) and *Write errors in a log file* (WP_DEBUG_LOG)
 
 1.2.3
 -----------
 
-* Correction d'un bug sur le paramètre d'activation du SEO
-* Suppression automatique des fichiers licence.txt et readme.html
+* SEO Fix bug
+* Automatic deletion of licence.txt and readme.html
 
 1.2.2
 -----------
 
-* Suppression de toutes les fonctions exec()
-* Dézip de WordPress et des plugins avec la class ZipArchive de PHP
-* Utilisation des fonctions scandir() et rename() pour déplacer les fichiers de WordPress
+* Deletion of all exec() fucntions
+* Unzip WordPress and plugins with ZipArchive class
+* Using scandir() and rename() to move WordPress files
 
 1.2.1
 -----------
 
-* Vérification des droits d'écriture sur le dossier parent
-* Ajout d'un lien vers l'admin et le site en cas de succès
+* Checking chmod on parent folder
+* Adding a link to website and admin if success
 
 1.2
 -----------
 
-* Possibilité de pré-configuré le formulaire à l'aide d'un fichier data.ini
+* You can now pre-configure the form with data.ini
 
 
 1.1
 -----------
 
-* Optimisation diverses du code
+* Code Optimisation
 
 
 1.0
 -----------
 
-* Commit Initial
+* Initial Commit
