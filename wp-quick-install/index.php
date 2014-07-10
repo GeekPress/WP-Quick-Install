@@ -558,7 +558,7 @@ else { ?>
 		<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
 	</head>
 	<body class="wp-core-ui">
-	<h1 id="logo"><a href="http://wp-quick-install.net/">WordPress</a></h1>
+	<h1 id="logo"><a href="http://wp-quick-install.com">WordPress</a></h1>
 		<?php
 		$parent_dir = realpath( dirname ( dirname( __FILE__ ) ) );
 		if ( is_writable( $parent_dir ) ) { ?>
