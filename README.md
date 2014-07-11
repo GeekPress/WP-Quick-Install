@@ -10,6 +10,11 @@ Simply download the .zip archive et go to *wp-quick-install/index.php*
 Changelog
 ================
 
+1.3.1
+-----------
+
+* Fix error for PHP > 5.5: Strict standards: Only variables should be passed by reference in ../wp-quick-install/index.php on line 10
+
 1.3
 -----------
 

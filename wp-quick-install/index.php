@@ -1,13 +1,13 @@
 <?php
 set_time_limit(0);
 
-define( 'WP_API_CORE', 'http://api.wordpress.org/core/version-check/1.7/?locale=' );
-define( 'WPQI_CACHE_PATH', 'cache/' );
-define( 'WPQI_CACHE_CORE_PATH', WPQI_CACHE_PATH . 'core/' );
-define( 'WPQI_CACHE_PLUGINS_PATH', WPQI_CACHE_PATH . 'plugins/' );
+define( 'WP_API_CORE'				, 'http://api.wordpress.org/core/version-check/1.7/?locale=' );
+define( 'WPQI_CACHE_PATH'			, 'cache/' );
+define( 'WPQI_CACHE_CORE_PATH'		, WPQI_CACHE_PATH . 'core/' );
+define( 'WPQI_CACHE_PLUGINS_PATH'	, WPQI_CACHE_PATH . 'plugins/' );
 
 // Force URL with index.php
-if ( empty( $_GET ) && end( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) ) == 'wp-quick-install' ) {
+if ( empty( $_GET ) && end(( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) )) == 'wp-quick-install' ) {
 	header( 'Location: index.php' );
 }
 
@@ -535,7 +535,9 @@ if ( isset( $_GET['action'] ) ) {
 					file_put_contents( $directory . '.htaccess' , null );
 					flush_rewrite_rules();
 				}
-
+				
+				echo '<div id="errors" class="alert alert-danger"><p style="margin:0;"><strong>' . _('Warning') . '</strong>: Don\'t forget to delete WP Quick Install folder.</p></div>';
+				
 				// Link to the admin
 				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">'.  _ ('Log In') .'</a>';
 				echo '<a href="' . home_url() . '" class="button" target="_blank">'.  _ ('Go to website').'</a>';
@@ -630,7 +632,7 @@ else { ?>
 								<?php
 								// Get all available languages
 								$languages = json_decode( file_get_contents( 'http://api.wordpress.org/translations/core/1.0/?version=4.0' ) )->translations;
-								
+
 								foreach ( $languages as $language ) {
 									echo '<option value="' . $language->language . '">' . $language->native_name . '</option>';
 								}
@@ -731,7 +733,7 @@ else { ?>
 
 				<h1><?php echo _('Permalinks Informations');?></h1>
 
-				<p><?php echo sprintf( _('By default WordPress uses web URLs which have question marks and lots of numbers in them; however, WordPress offers you the ability to create a custom URL structure for your permalinks and archives. This can improve the aesthetics, usability, and forward-compatibility of your links. A <a href="%s">number of tags are available</a>, and here are some examples to get you started.'), 'http://codex.wordpress.org/Using_Permalinks'); ?></p>
+				<p><?php echo sprintf( _('By default WordPress uses web URLs which have question marks and lots of numbers in them; however, WordPress offers you the ability to create a custom URL structure for your permalinks and archives. This can improve the aesthetics, usability, and forward-compatibility of your links. A <a href="%s">number of tags are available</a>.'), 'http://codex.wordpress.org/Using_Permalinks'); ?></p>
 
 				<table class="form-table">
 					<tr>

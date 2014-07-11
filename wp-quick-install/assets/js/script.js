@@ -296,7 +296,7 @@ $(document).ready(function() {
 
 	// Let's create the wp-config.php file
 	function wp_config() {
-		$response.html("<p>File Creation For wp-config...</p>");
+		$response.html("<p>File Creation for wp-config...</p>");
 		$('.progress-bar').animate({width: "33%"});
 		$.post(window.location.href + '?action=wp_config', $('form').serialize(), function(data) {
 			install_wp();
