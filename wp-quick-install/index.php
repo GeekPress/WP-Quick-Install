@@ -1,14 +1,26 @@
 <?php
-set_time_limit(0);
+/*
+Script Name: WP Quick Install
+Author: Jonathan Buttigieg
+Contributors: Julio Potier
+Script URI: http://wp-quick-install.com
+Version: 1.3.1
+Licence: GPLv3
+Last Update: 11 jul 14
+*/
 
+@set_time_limit( 0 );
 define( 'WP_API_CORE'				, 'http://api.wordpress.org/core/version-check/1.7/?locale=' );
 define( 'WPQI_CACHE_PATH'			, 'cache/' );
 define( 'WPQI_CACHE_CORE_PATH'		, WPQI_CACHE_PATH . 'core/' );
 define( 'WPQI_CACHE_PLUGINS_PATH'	, WPQI_CACHE_PATH . 'plugins/' );
 
+require( 'inc/functions.php' );
+
 // Force URL with index.php
-if ( empty( $_GET ) && end(( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) )) == 'wp-quick-install' ) {
+if ( empty( $_GET ) && end( ( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) ) ) == 'wp-quick-install' ) {
 	header( 'Location: index.php' );
+	die();
 }
 
 // Create cache directories
@@ -29,7 +41,7 @@ if ( file_exists( 'data.ini' ) ) {
 }
 
 // We add  ../ to directory
-$directory = !empty( $_POST['directory'] ) ? '../' . $_POST['directory'] . '/' : '../';
+$directory = ! empty( $_POST['directory'] ) ? '../' . $_POST['directory'] . '/' : '../';
 
 if ( isset( $_GET['action'] ) ) {
 
@@ -64,7 +76,7 @@ if ( isset( $_GET['action'] ) ) {
 		case "download_wp" :
 
 			// Get WordPress language
-			$language = $_POST['language'];
+			$language = substr( $_POST['language'], 0, 6 );
 
 			// Get WordPress data
 			$wp = json_decode( file_get_contents( WP_API_CORE . $language ) )->offers[0];
@@ -82,7 +94,7 @@ if ( isset( $_GET['action'] ) ) {
 		case "unzip_wp" :
 
 			// Get WordPress language
-			$language = $_POST['language'];
+			$language = substr( $_POST['language'], 0, 6 );
 
 			// Get WordPress data
 			$wp = json_decode( file_get_contents( WP_API_CORE . $language ) )->offers[0];
@@ -112,8 +124,8 @@ if ( isset( $_GET['action'] ) ) {
 				// We scan the folder
 				$files = scandir( 'wordpress' );
 
-				// We remove the "." and ".." from the current folder and his parents
-				unset( $files[0], $files[1] );
+				// We remove the "." and ".." from the current folder and its parent
+				$files = array_diff( $files, array( '.', '..' ) );
 
 				// We move the files and folders
 				foreach ( $files as $file ) {
@@ -144,17 +156,18 @@ if ( isset( $_GET['action'] ) ) {
 					$secret_keys[$k] = substr( $v, 28, 64 );
 				}
 
-				// We change the  datas
+				// We change the data
 				$key = 0;
 				foreach ( $config_file as &$line ) {
 
 					if ( '$table_prefix  =' == substr( $line, 0, 16 ) ) {
-						$line = '$table_prefix  = \'' . addcslashes( $_POST[ 'prefix' ], "\\'" ) . "';\r\n";
+						$line = '$table_prefix  = \'' . sanit( $_POST[ 'prefix' ], "\\'" ) . "';\r\n";
 						continue;
 					}
 
-					if ( ! preg_match( '/^define\(\'([A-Z_]+)\',([ ]+)/', $line, $match ) )
+					if ( ! preg_match( '/^define\(\'([A-Z_]+)\',([ ]+)/', $line, $match ) ) {
 						continue;
+					}
 
 					$constant = $match[1];
 
@@ -163,7 +176,7 @@ if ( isset( $_GET['action'] ) ) {
 
 							// Debug mod
 							if ( (int) $_POST['debug'] == 1 ) {
-								$line = "define('" . $constant . "', 'true');\r\n";
+								$line = "define('WP_DEBUG', 'true');\r\n";
 
 								// Display error
 								if ( (int) $_POST['debug_display'] == 1 ) {
@@ -181,22 +194,22 @@ if ( isset( $_GET['action'] ) ) {
 							// We add the extras constant
 							if ( ! empty( $_POST['uploads'] ) ) {
 								$line .= "\r\n\n " . "/** Dossier de destination des fichiers uploadés */" . "\r\n";
-								$line .= "define('UPLOADS', '" . $_POST['uploads'] . "');";
+								$line .= "define('UPLOADS', '" . sanit( $_POST['uploads'] ) . "');";
 							}
 
 							if ( (int) $_POST['post_revisions'] >= 0 ) {
 								$line .= "\r\n\n " . "/** Désactivation des révisions d'articles */" . "\r\n";
-								$line .= "define('WP_POST_REVISIONS', " . (int)$_POST['post_revisions'] . ");";
+								$line .= "define('WP_POST_REVISIONS', " . (int) $_POST['post_revisions'] . ");";
 							}
 
 							if ( (int) $_POST['disallow_file_edit'] == 1 ) {
 								$line .= "\r\n\n " . "/** Désactivation de l'éditeur de thème et d'extension */" . "\r\n";
-								$line .= "define('DISALLOW_FILE_EDIT', false);";
+								$line .= "define('DISALLOW_FILE_EDIT', true);";
 							}
 
 							if ( (int) $_POST['autosave_interval'] >= 60 ) {
 								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
-								$line .= "define('AUTOSAVE_INTERVAL', " . (int)$_POST['autosave_interval'] . ");";
+								$line .= "define('AUTOSAVE_INTERVAL', " . (int) $_POST['autosave_interval'] . ");";
 							}
 
 							$line .= "\r\n\n " . "/** On augmente la mémoire limite */" . "\r\n";
@@ -204,16 +217,16 @@ if ( isset( $_GET['action'] ) ) {
 
 							break;
 						case 'DB_NAME'     :
-							$line = "define('" . $constant . "', '" . addcslashes( $_POST[ 'dbname' ], "\\'" ) . "');\r\n";
+							$line = "define('DB_NAME', '" . sanit( $_POST[ 'dbname' ], "\\'" ) . "');\r\n";
 							break;
 						case 'DB_USER'     :
-							$line = "define('" . $constant . "', '" . addcslashes( $_POST['uname'], "\\'" ) . "');\r\n";
+							$line = "define('DB_USER', '" . sanit( $_POST['uname'], "\\'" ) . "');\r\n";
 							break;
 						case 'DB_PASSWORD' :
-							$line = "define('" . $constant . "', '" . addcslashes( $_POST['pwd'], "\\'" ) . "');\r\n";
+							$line = "define('DB_PASSWORD', '" . sanit( $_POST['pwd'], "\\'" ) . "');\r\n";
 							break;
 						case 'DB_HOST'     :
-							$line = "define('" . $constant . "', '" . addcslashes( $_POST['dbhost'], "\\'" ) . "');\r\n";
+							$line = "define('DB_HOST', '" . sanit( $_POST['dbhost'], "\\'" ) . "');\r\n";
 							break;
 						case 'AUTH_KEY'         :
 						case 'SECURE_AUTH_KEY'  :
@@ -223,17 +236,17 @@ if ( isset( $_GET['action'] ) ) {
 						case 'SECURE_AUTH_SALT' :
 						case 'LOGGED_IN_SALT'   :
 						case 'NONCE_SALT'       :
-							$line = "define('" . $constant . "', '" . $secret_keys[$key++] . "');\r\n";
+							$line = "define('" . $constant . "', '" . $secret_keys[ $key++ ] . "');\r\n";
 							break;
 
 						case 'WPLANG' :
-							$line = "define('" . $constant . "', '" . addcslashes( $_POST['language'], "\\'" ) . "');\r\n";
+							$line = "define('WPLANG', '" . sanit( $_POST['language'], "\\'" ) . "');\r\n";
 							break;
 					}
 				}
 				unset( $line );
 
-				$handle = fopen($directory . 'wp-config.php', 'w');
+				$handle = fopen( $directory . 'wp-config.php', 'w' );
 				foreach ( $config_file as $line ) {
 					fwrite( $handle, $line );
 				} // foreach
@@ -260,7 +273,7 @@ if ( isset( $_GET['action'] ) ) {
 				require_once( $directory . 'wp-includes/wp-db.php' );
 
 				// WordPress installation
-				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int)$_POST[ 'blog_public' ], '', $_POST['admin_password'] );
+				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int) $_POST[ 'blog_public' ], '', $_POST['admin_password'] );
 
 				// We update the options with the right siteurl et homeurl value
 				$url = trim( str_replace( basename(dirname(__FILE__)) . '/index.php/wp-admin/install.php?action=install_wp' , str_replace( '../', '', $directory ), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] ), '/' );
@@ -303,7 +316,7 @@ if ( isset( $_GET['action'] ) ) {
 					update_option( 'large_size_h', (int) $_POST['large_size_h'] );
 				}
 
-				 update_option( 'uploads_use_yearmonth_folders', (int)$_POST['uploads_use_yearmonth_folders'] );
+				 update_option( 'uploads_use_yearmonth_folders', (int) $_POST['uploads_use_yearmonth_folders'] );
 
 				/*--------------------------*/
 				/*	We add the pages we found in the data.ini file
@@ -360,6 +373,8 @@ if ( isset( $_GET['action'] ) ) {
 
 							if ( isset( $post['title'] ) && !empty( $post['title'] ) ) {
 
+								$parent = get_page_by_title( trim( $post['parent'] ) );
+								$parent = $parent ? $parent->ID : 0;
 								// Let's create the page
 								$args = array(
 									'post_title' 		=> trim( $post['title'] ),
@@ -367,12 +382,12 @@ if ( isset( $_GET['action'] ) ) {
 									'post_content'		=> trim( $post['content'] ),
 									'post_status' 		=> $post['status'],
 									'post_type' 		=> $post['type'],
-									'post_parent'		=> get_page_by_title( trim( $post['parent'] ) )->ID,
+									'post_parent'		=> $parent,
 									'post_author'		=> 1,
 									'post_date' 		=> date('Y-m-d H:i:s'),
 									'post_date_gmt' 	=> gmdate('Y-m-d H:i:s'),
-									'comment_status' 	=> 'closed',
-									'ping_status'		=> 'closed'
+									'comment_status' 	=> 'closed', //// todo ?
+									'ping_status'		=> 'closed', //// todo ?
 								);
 								wp_insert_post( $args );
 
@@ -449,14 +464,18 @@ if ( isset( $_GET['action'] ) ) {
 
 					foreach ( $plugins as $plugin ) {
 
-						// We retrieve the plugin XML file to get the link to downlad it
-					    if ( $plugin = json_decode( file_get_contents( "http://api.wordpress.org/plugins/info/1.0/$plugin.json" )) ) {
+						// We retrieve the plugin XML file to get the link to download it
+						$plugin_repo = file_get_contents( "http://api.wordpress.org/plugins/info/1.0/$plugin.json" );
+					    if ( $plugin_repo && $plugin = json_decode( $plugin_repo ) ) {
 
 							$plugin_path = WPQI_CACHE_PLUGINS_PATH . $plugin->slug . '-' . $plugin->version . '.zip';
 
 							if ( ! file_exists( $plugin_path ) ) {
 								// We download the lastest version
-								file_put_contents( $plugin_path, file_get_contents( $plugin->download_link ) );
+								$download_link = file_get_contents( $plugin->download_link );
+								if ( $download_link ) {
+									file_put_contents( $plugin_path, $download_link );
+								}
 							}
 
 					    	// We unzip it
@@ -476,7 +495,7 @@ if ( isset( $_GET['action'] ) ) {
 					$plugins = scandir( 'plugins' );
 
 					// We remove the "." and ".." corresponding to the current and parent folder
-					unset( $plugins[0], $plugins[1] );
+					$plugins = array_diff( $plugins, array( '.', '..' ) );
 
 					// We move the archives and we unzip
 					foreach ( $plugins as $plugin ) {
@@ -539,8 +558,8 @@ if ( isset( $_GET['action'] ) ) {
 				echo '<div id="errors" class="alert alert-danger"><p style="margin:0;"><strong>' . _('Warning') . '</strong>: Don\'t forget to delete WP Quick Install folder.</p></div>';
 				
 				// Link to the admin
-				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">'.  _ ('Log In') .'</a>';
-				echo '<a href="' . home_url() . '" class="button" target="_blank">'.  _ ('Go to website').'</a>';
+				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">'.  _('Log In') .'</a>';
+				echo '<a href="' . home_url() . '" class="button" target="_blank">'.  _('Go to website').'</a>';
 
 				break;
 	}
@@ -551,7 +570,7 @@ else { ?>
 	<head>
 		<meta charset="utf-8" />
 		<title>WP Quick Install</title>
-		<!-- Get out Google ! -->
+		<!-- Get out Google! -->
 		<meta name="robots" content="noindex, nofollow">
 		<!-- CSS files -->
 		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C600italic%2C300%2C400%2C600&#038;subset=latin%2Clatin-ext&#038;ver=3.9.1" />
@@ -587,7 +606,7 @@ else { ?>
 
 				<table class="form-table">
 					<tr>
-						<th scope="row"><label for="dbname"><?php echo _ ('Database name');?></label></th>
+						<th scope="row"><label for="dbname"><?php echo _('Database name');?></label></th>
 						<td><input name="dbname" id="dbname" type="text" size="25" value="wordpress" class="required" /></td>
 						<td><?php echo _( 'The name of the database you want to run WP in.' ); ?></td>
 					</tr>
@@ -621,7 +640,7 @@ else { ?>
 				</table>
 
 				<h1><?php echo _('Required Informations');?></h1>
-				<p><?php echo _('Thank you to provide the following information. Don\'t worry, you will be able to change it later.');?></p>
+				<p><?php echo _('Thank you to provide the following informations. Don\'t worry, you will be able to change it later.');?></p>
 
 				<table class="form-table">
 					<tr>
@@ -658,6 +677,7 @@ else { ?>
 						<td>
 							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
+							<p><?php echo _('Please avoid <em>admin</em>, <em>administrator</em> etc for security reasons.');?></p>
 						</td>
 					</tr>
 					<tr>
@@ -741,13 +761,14 @@ else { ?>
 							<label for="permalink_structure"><?php echo _('Custom Structure');?></label>
 						</th>
 						<td>
-							<code>http://<?php echo $_SERVER['SERVER_NAME']; ?></code>
+							<?php $protocol = ! is_ssl() ? 'http' : 'https'; ?>
+							<code><?php echo $protocol; ?>://<?php echo $_SERVER['SERVER_NAME']; ?></code>
 							<input name="permalink_structure" type="text" id="permalink_structure" size="50" value="/%postname%/" />
 						</td>
 					</tr>
 				</table>
 
-				<h1><?php echo _('Medias Informations');?></h1>
+				<h1><?php echo _('Media Informations');?></h1>
 
 				<p><?php echo _('Specified dimensions below determine the maximum dimensions (in pixels) to use when inserting an image into the body of an article.');?></p>
 
@@ -799,7 +820,7 @@ else { ?>
 					<tr>
 						<th scope="row">
 							<label for="post_revisions"><?php echo _('Revisions');?></label>
-							<p><?php echo _('By default, number of post revision is unlimited');?></p>
+							<p><?php echo _('By default, number of post revision is unlimited, 0=disabled');?></p>
 						</th>
 						<td>
 							<input name="post_revisions" id="post_revisions" type="number" min="0" value="0" />

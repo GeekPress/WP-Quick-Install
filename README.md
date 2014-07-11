@@ -10,6 +10,12 @@ Simply download the .zip archive et go to *wp-quick-install/index.php*
 Changelog
 ================
 
+1.3.2
+-----------
+
+* Add a script header
+* Security improvement
+
 1.3.1
 -----------
 
