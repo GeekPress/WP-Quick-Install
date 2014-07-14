@@ -1,4 +1,4 @@
-WP Quick Install 1.3.2
+WP Quick Install 1.3.3
 ================
 
 WP Quick Install is the easiest way to install WordPress.
@@ -9,6 +9,12 @@ Simply download the .zip archive et go to *wp-quick-install/index.php*
 
 Changelog
 ================
+
+1.3.3
+-----------
+
+* Add SSL compatibility
+* Remove SSL function (cause trouble with process installation)
 
 1.3.2
 -----------

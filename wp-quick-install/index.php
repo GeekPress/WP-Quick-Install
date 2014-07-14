@@ -10,6 +10,7 @@ Last Update: 11 jul 14
 */
 
 @set_time_limit( 0 );
+
 define( 'WP_API_CORE'				, 'http://api.wordpress.org/core/version-check/1.7/?locale=' );
 define( 'WPQI_CACHE_PATH'			, 'cache/' );
 define( 'WPQI_CACHE_CORE_PATH'		, WPQI_CACHE_PATH . 'core/' );
@@ -161,7 +162,7 @@ if ( isset( $_GET['action'] ) ) {
 				foreach ( $config_file as &$line ) {
 
 					if ( '$table_prefix  =' == substr( $line, 0, 16 ) ) {
-						$line = '$table_prefix  = \'' . sanit( $_POST[ 'prefix' ], "\\'" ) . "';\r\n";
+						$line = '$table_prefix  = \'' . sanit( $_POST[ 'prefix' ] ) . "';\r\n";
 						continue;
 					}
 
@@ -217,16 +218,16 @@ if ( isset( $_GET['action'] ) ) {
 
 							break;
 						case 'DB_NAME'     :
-							$line = "define('DB_NAME', '" . sanit( $_POST[ 'dbname' ], "\\'" ) . "');\r\n";
+							$line = "define('DB_NAME', '" . sanit( $_POST[ 'dbname' ] ) . "');\r\n";
 							break;
 						case 'DB_USER'     :
-							$line = "define('DB_USER', '" . sanit( $_POST['uname'], "\\'" ) . "');\r\n";
+							$line = "define('DB_USER', '" . sanit( $_POST['uname'] ) . "');\r\n";
 							break;
 						case 'DB_PASSWORD' :
-							$line = "define('DB_PASSWORD', '" . sanit( $_POST['pwd'], "\\'" ) . "');\r\n";
+							$line = "define('DB_PASSWORD', '" . sanit( $_POST['pwd'] ) . "');\r\n";
 							break;
 						case 'DB_HOST'     :
-							$line = "define('DB_HOST', '" . sanit( $_POST['dbhost'], "\\'" ) . "');\r\n";
+							$line = "define('DB_HOST', '" . sanit( $_POST['dbhost'] ) . "');\r\n";
 							break;
 						case 'AUTH_KEY'         :
 						case 'SECURE_AUTH_KEY'  :
@@ -236,11 +237,11 @@ if ( isset( $_GET['action'] ) ) {
 						case 'SECURE_AUTH_SALT' :
 						case 'LOGGED_IN_SALT'   :
 						case 'NONCE_SALT'       :
-							$line = "define('" . $constant . "', '" . $secret_keys[ $key++ ] . "');\r\n";
+							$line = "define('" . $constant . "', '" . $secret_keys[$key++] . "');\r\n";
 							break;
 
 						case 'WPLANG' :
-							$line = "define('WPLANG', '" . sanit( $_POST['language'], "\\'" ) . "');\r\n";
+							$line = "define('WPLANG', '" . sanit( $_POST['language'] ) . "');\r\n";
 							break;
 					}
 				}
@@ -249,7 +250,7 @@ if ( isset( $_GET['action'] ) ) {
 				$handle = fopen( $directory . 'wp-config.php', 'w' );
 				foreach ( $config_file as $line ) {
 					fwrite( $handle, $line );
-				} // foreach
+				}
 				fclose( $handle );
 
 				// We set the good rights to the wp-config file
@@ -276,7 +277,13 @@ if ( isset( $_GET['action'] ) ) {
 				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int) $_POST[ 'blog_public' ], '', $_POST['admin_password'] );
 
 				// We update the options with the right siteurl et homeurl value
-				$url = trim( str_replace( basename(dirname(__FILE__)) . '/index.php/wp-admin/install.php?action=install_wp' , str_replace( '../', '', $directory ), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] ), '/' );
+				$protocol = ! is_ssl() ? 'http' : 'https';
+                $get = basename( dirname( __FILE__ ) ) . '/index.php/wp-admin/install.php?action=install_wp';
+                $dir = str_replace( '../', '', $directory );
+                $link = $protocol . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                $url = str_replace( $get, $dir, $link );
+                $url = trim( $url, '/' );
+
 				update_option( 'siteurl', $url );
 				update_option( 'home', $url );
 
@@ -374,7 +381,8 @@ if ( isset( $_GET['action'] ) ) {
 							if ( isset( $post['title'] ) && !empty( $post['title'] ) ) {
 
 								$parent = get_page_by_title( trim( $post['parent'] ) );
-								$parent = $parent ? $parent->ID : 0;
+ 								$parent = $parent ? $parent->ID : 0;
+
 								// Let's create the page
 								$args = array(
 									'post_title' 		=> trim( $post['title'] ),
@@ -386,8 +394,8 @@ if ( isset( $_GET['action'] ) ) {
 									'post_author'		=> 1,
 									'post_date' 		=> date('Y-m-d H:i:s'),
 									'post_date_gmt' 	=> gmdate('Y-m-d H:i:s'),
-									'comment_status' 	=> 'closed', //// todo ?
-									'ping_status'		=> 'closed', //// todo ?
+									'comment_status' 	=> 'closed',
+									'ping_status'		=> 'closed'
 								);
 								wp_insert_post( $args );
 
@@ -464,19 +472,18 @@ if ( isset( $_GET['action'] ) ) {
 
 					foreach ( $plugins as $plugin ) {
 
-						// We retrieve the plugin XML file to get the link to download it
-						$plugin_repo = file_get_contents( "http://api.wordpress.org/plugins/info/1.0/$plugin.json" );
+						// We retrieve the plugin XML file to get the link to downlad it
+					    $plugin_repo = file_get_contents( "http://api.wordpress.org/plugins/info/1.0/$plugin.json" );
+
 					    if ( $plugin_repo && $plugin = json_decode( $plugin_repo ) ) {
 
 							$plugin_path = WPQI_CACHE_PLUGINS_PATH . $plugin->slug . '-' . $plugin->version . '.zip';
 
 							if ( ! file_exists( $plugin_path ) ) {
 								// We download the lastest version
-								$download_link = file_get_contents( $plugin->download_link );
-								if ( $download_link ) {
-									file_put_contents( $plugin_path, $download_link );
-								}
-							}
+								if ( $download_link = file_get_contents( $plugin->download_link ) ) {
+ 									file_put_contents( $plugin_path, $download_link );
+ 								}							}
 
 					    	// We unzip it
 					    	$zip = new ZipArchive;
@@ -484,7 +491,6 @@ if ( isset( $_GET['action'] ) ) {
 								$zip->extractTo( $plugins_dir );
 								$zip->close();
 							}
-
 					    }
 					}
 				}
@@ -554,12 +560,12 @@ if ( isset( $_GET['action'] ) ) {
 					file_put_contents( $directory . '.htaccess' , null );
 					flush_rewrite_rules();
 				}
-				
+
 				echo '<div id="errors" class="alert alert-danger"><p style="margin:0;"><strong>' . _('Warning') . '</strong>: Don\'t forget to delete WP Quick Install folder.</p></div>';
-				
+
 				// Link to the admin
-				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">'.  _('Log In') .'</a>';
-				echo '<a href="' . home_url() . '" class="button" target="_blank">'.  _('Go to website').'</a>';
+				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">'. _('Log In') . '</a>';
+				echo '<a href="' . home_url() . '" class="button" target="_blank">' . _('Go to website') . '</a>';
 
 				break;
 	}
@@ -640,11 +646,11 @@ else { ?>
 				</table>
 
 				<h1><?php echo _('Required Informations');?></h1>
-				<p><?php echo _('Thank you to provide the following informations. Don\'t worry, you will be able to change it later.');?></p>
+				<p><?php echo _('Thank you to provide the following information. Don\'t worry, you will be able to change it later.');?></p>
 
 				<table class="form-table">
 					<tr>
-						<th scope="row"><label for="language"><?php echo _ ('Language');?></label></th>
+						<th scope="row"><label for="language"><?php echo _('Language');?></label></th>
 						<td>
 							<select id="language" name="language">
 								<option value="en_US">English (United States)</option>
@@ -677,13 +683,12 @@ else { ?>
 						<td>
 							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
-							<p><?php echo _('Please avoid <em>admin</em>, <em>administrator</em> etc for security reasons.');?></p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row">
 							<label for="admin_password"><?php echo _('Password');?></label>
-							<p><?php echo _ ('A password will be automatically generated for you if you leave this blank.');?></p>
+							<p><?php echo _('A password will be automatically generated for you if you leave this blank.');?></p>
 						</th>
 						<td>
 							<input name="admin_password" type="password" id="admin_password" size="25" value="" />
@@ -697,11 +702,11 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="blog_public"><?php echo _('Privacy');?></label></th>
-						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked="checked" /> <?php echo _ ('Allow search engines to index this site.');?></label></td>
+						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked="checked" /> <?php echo _('Allow search engines to index this site.');?></label></td>
 					</tr>
 				</table>
 
-				<h1><?php echo _ ('Theme Informations');?></h1>
+				<h1><?php echo _('Theme Informations');?></h1>
 				<p><?php echo _('Enter the information below for your personal theme.');?></p>
 				<div class="alert alert-info">
 					<p style="margin:0px; padding:0px;"><?php echo _('WP Quick Install will automatically install your theme if it\'s on wp-quick-install folder and named theme.zip');?></p>
@@ -724,7 +729,7 @@ else { ?>
 				</table>
 
 				<h1><?php echo _('Extensions Informations');?></h1>
-				<p><?php echo _ ('Simply enter below the extensions that should be addend during the installation.');?></p>
+				<p><?php echo _('Simply enter below the extensions that should be addend during the installation.');?></p>
 				<table class="form-table">
 					<tr>
 						<th scope="row">
@@ -738,7 +743,7 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row">
-							<label for="plugins"><?php echo _ ('Premium Extensions');?></label>
+							<label for="plugins"><?php echo _('Premium Extensions');?></label>
 							<p><?php echo _('Zip Archives have to be in the <em>plugins</em> folder at the <em>wp-quick-install</em> root folder.');?></p>
 						</th>
 						<td><label><input type="checkbox" id="plugins_premium" name="plugins_premium" value="1" /> <?php echo _('Install the premium extensions after WordPress installation.');?></label></td>
@@ -761,8 +766,7 @@ else { ?>
 							<label for="permalink_structure"><?php echo _('Custom Structure');?></label>
 						</th>
 						<td>
-							<?php $protocol = ! is_ssl() ? 'http' : 'https'; ?>
-							<code><?php echo $protocol; ?>://<?php echo $_SERVER['SERVER_NAME']; ?></code>
+							<code>http://<?php echo $_SERVER['SERVER_NAME']; ?></code>
 							<input name="permalink_structure" type="text" id="permalink_structure" size="50" value="/%postname%/" />
 						</td>
 					</tr>
@@ -820,7 +824,7 @@ else { ?>
 					<tr>
 						<th scope="row">
 							<label for="post_revisions"><?php echo _('Revisions');?></label>
-							<p><?php echo _('By default, number of post revision is unlimited, 0=disabled');?></p>
+							<p><?php echo _('By default, number of post revision is unlimited');?></p>
 						</th>
 						<td>
 							<input name="post_revisions" id="post_revisions" type="number" min="0" value="0" />
