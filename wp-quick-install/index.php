@@ -4,9 +4,9 @@ Script Name: WP Quick Install
 Author: Jonathan Buttigieg
 Contributors: Julio Potier
 Script URI: http://wp-quick-install.com
-Version: 1.3.1
+Version: 1.3.4
 Licence: GPLv3
-Last Update: 11 jul 14
+Last Update: 08 jan 15
 */
 
 @set_time_limit( 0 );
@@ -212,6 +212,11 @@ if ( isset( $_GET['action'] ) ) {
 								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
 								$line .= "define('AUTOSAVE_INTERVAL', " . (int) $_POST['autosave_interval'] . ");";
 							}
+							
+							if ( ! empty( $_POST['wpcom_api_key'] ) ) {
+								$line .= "\r\n\n " . "/** WordPress.com API Key */" . "\r\n";
+								$line .= "define('WPCOM_API_KEY', " . $_POST['wpcom_api_key'] . ");";
+							}
 
 							$line .= "\r\n\n " . "/** On augmente la mémoire limite */" . "\r\n";
 							$line .= "define('WP_MEMORY_LIMIT', '96M');" . "\r\n";
@@ -264,6 +269,8 @@ if ( isset( $_GET['action'] ) ) {
 				/*	Let's install WordPress database
 				/*--------------------------*/
 
+				define( 'WP_INSTALLING', true );
+				
 				/** Load WordPress Bootstrap */
 				require_once( $directory . 'wp-load.php' );
 
@@ -737,7 +744,7 @@ else { ?>
 							<p><?php echo _('The extension slug is available in the url (Ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>)');?></p>
 						</th>
 						<td>
-							<input name="plugins" type="text" id="plugins" size="50" value="" />
+							<input name="plugins" type="text" id="plugins" size="50" value="wp-website-monitoring; rocket-lazy-load" />
 							<p><?php echo _('Make sure that the extensions slugs are separated by a semicolon (;).');?></p>
 						</td>
 					</tr>
@@ -857,6 +864,12 @@ else { ?>
 								<label><input type="checkbox" name="debug_log" id="debug_log" value="1" /> <?php echo _('Write errors in a log file <em>(wp-content/debug.log)</em>. ');?></label>
 							</div>
 						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="wpcom_api_key"><?php echo _('WP.com API Key');?></label>
+						</th>
+						<td><input name="wpcom_api_key" id="wpcom_api_key" type="text" size="25" value="" /></td>
 					</tr>
 				</table>
 				<p class="step"><span id="submit" class="button button-large"><?php echo _('Install WordPress');?></span></p>

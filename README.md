@@ -10,6 +10,11 @@ Simply download the .zip archive et go to *wp-quick-install/index.php*
 Changelog
 ================
 
+1.4
+-----------
+* Fix database issue since WordPress 4.1
+* You can add your WordPress.com API Key
+
 1.3.3
 -----------
 
@@ -63,7 +68,7 @@ Changelog
 * You can enable extension after installation
 * Auto supression of Hello Dolly extension
 * You can add a theme and enable it
-* PYou can delete Twenty Elever and Twenty Ten
+* You can delete Twenty Elever and Twenty Ten
 
 1.2.6
 -----------

@@ -214,6 +214,10 @@ $(document).ready(function() {
 				$('#debug').removeAttr('checked');
 			}
 		}
+		
+		if ( typeof data.wp_config.wpcom_api_key !='undefined' ) {
+			$('#wpcom_api_key').val(data.wp_config.wpcom_api_key);
+		}
 
 	}
 
