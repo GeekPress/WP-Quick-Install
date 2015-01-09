@@ -4,7 +4,7 @@ Script Name: WP Quick Install
 Author: Jonathan Buttigieg
 Contributors: Julio Potier
 Script URI: http://wp-quick-install.com
-Version: 1.4
+Version: 1.4.1
 Licence: GPLv3
 Last Update: 08 jan 15
 */
@@ -215,7 +215,7 @@ if ( isset( $_GET['action'] ) ) {
 							
 							if ( ! empty( $_POST['wpcom_api_key'] ) ) {
 								$line .= "\r\n\n " . "/** WordPress.com API Key */" . "\r\n";
-								$line .= "define('WPCOM_API_KEY', " . $_POST['wpcom_api_key'] . ");";
+								$line .= "define('WPCOM_API_KEY', '" . $_POST['wpcom_api_key'] . "');";
 							}
 
 							$line .= "\r\n\n " . "/** On augmente la mémoire limite */" . "\r\n";
