@@ -212,7 +212,7 @@ if ( isset( $_GET['action'] ) ) {
 								$line .= "\r\n\n " . "/** Intervalle des sauvegardes automatique */" . "\r\n";
 								$line .= "define('AUTOSAVE_INTERVAL', " . (int) $_POST['autosave_interval'] . ");";
 							}
-							
+
 							if ( ! empty( $_POST['wpcom_api_key'] ) ) {
 								$line .= "\r\n\n " . "/** WordPress.com API Key */" . "\r\n";
 								$line .= "define('WPCOM_API_KEY', '" . $_POST['wpcom_api_key'] . "');";
@@ -270,7 +270,7 @@ if ( isset( $_GET['action'] ) ) {
 				/*--------------------------*/
 
 				define( 'WP_INSTALLING', true );
-				
+
 				/** Load WordPress Bootstrap */
 				require_once( $directory . 'wp-load.php' );
 
@@ -450,6 +450,7 @@ if ( isset( $_GET['action'] ) ) {
 
 						// Let's remove the Tweenty family
 						if ( $_POST['delete_default_themes'] == 1 ) {
+                            delete_theme( 'twentyfifteen' );
 							delete_theme( 'twentyfourteen' );
 							delete_theme( 'twentythirteen' );
 							delete_theme( 'twentytwelve' );
