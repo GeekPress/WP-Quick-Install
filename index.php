@@ -697,4 +697,4 @@ $WPQI_Installer_Skin = function() {
 };
 
 // go
-new wp_quick_install($config_json);
+new wp_quick_install($user_config);
