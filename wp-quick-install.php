@@ -394,12 +394,11 @@ class wp_quick_install {
 		
 		if($this->data['set_avatar']) update_option("avatar_default", "identicon");
 		
-		//return;
-		
 		unlink($this->dir . "index.php");
 		rename($this->dir . "index.php.orig", $this->dir . "index.php");
 		
-		$this->data["step"] = get_home_url();
+		$this->data["step"] = "redirect";
+		$this->data["redirect_url"] = get_admin_url();
 	}
 	
 	function page() {
@@ -575,6 +574,11 @@ a img,abbr{border:0}#logo a,a{text-decoration:none}#logo a,.form-table th p,h1{f
 	</form>
 </div>
 
+
+<div step="redirect">
+	<p>Redirecting...</p>
+</div>
+
 <div id="error">
 	<p><span id="error_msg"></span> <small><a href="javascript:wp_install.submit()">try again</a></small></p>
 </div>
@@ -628,13 +632,6 @@ var wp_install = new function() {
 		// load new data from server if any
 		if(ajax && ajax.data) this.data = ajax.data;
 		
-		// if step is url then redirect
-		var is_url = /^(http|https):\/\//i.test(this.data.step);
-		if(is_url) {
-			location.href = this.data.step;
-			return;
-		}
-		
 		// refresh
 		this.refreshProps();
 		
@@ -646,6 +643,11 @@ var wp_install = new function() {
 			var submit_button = this.$step.find(":input");
 			if(submit_button.length > 1) submit_button.click();
 			else this.submit();
+		}
+		
+		// redirect
+		if(this.data.step == "redirect") {
+			location.href = this.data.redirect_url;
 		}
 		
 	}
