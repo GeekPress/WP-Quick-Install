@@ -14,7 +14,9 @@ class wp_quick_install {
 	var $data = array();
 	var $error = array();
 	
-	function __construct($user_config = array()) { 
+	var $user_config = array();
+	
+	function __construct($user_config) { 
         
 		// time limit
 		@set_time_limit(120);
@@ -23,7 +25,7 @@ class wp_quick_install {
 		$this->error_log();
 		
 		// user config
-		$this->user_config = $user_config;
+		if(is_array($user_config)) $this->user_config = $user_config;
 		
 		// sets data
 		if($_POST["json"]) $this->data = json_decode($_POST["json"], true);
