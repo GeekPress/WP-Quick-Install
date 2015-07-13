@@ -7,6 +7,12 @@ Script URI: http://wp-quick-install.com
 Licence: GPLv3
 */
 
+/*
+Release notes:
+for future all the contents of this file should be loaded from WordPress api
+And this file replaced with eval( file_get_contents(WP_API) )
+*/
+
 ob_start();
 
 // PUT YOUR CONFIGURATION HERE ?>
