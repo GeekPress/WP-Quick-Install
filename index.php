@@ -15,15 +15,22 @@ And this file replaced with eval( file_get_contents(WP_API) )
 
 ob_start();
 
-// PUT YOUR CONFIGURATION HERE ?>
+// SET YOUR CONFIGURATION HERE ?>
 
 {
-	"not_implemented" : "yet",
+	//"auto_installer": true,
+	"db": {
+		//"name": "wordpress",
+		//"user": "admin",
+		//"pwd": "",
+		//"host": "localhost",
+		//"prefix": "wp_",
+	},
 }
 
 <?php
 
-$config_json = json_decode(ob_get_clean(), true);
+$user_config = ob_get_clean();
 
 class wp_quick_install {
 	
@@ -32,7 +39,7 @@ class wp_quick_install {
 	var $data = array();
 	var $error = array();
 	
-	function __construct($initData = array()) { 
+	function __construct($config_json = "{}") { 
         
 		// time limit
 		@set_time_limit(120);
@@ -40,8 +47,10 @@ class wp_quick_install {
 		// error reporting
 		$this->error_log();
 		
+		// user config
+		$this->config_json = $config_json;
+		
 		// sets data
-		$this->data = $initData;
 		if($_POST["data"]) $this->data = $_POST["data"];
 		
 		// no submit by default
@@ -601,7 +610,7 @@ a img,abbr{border:0}#logo a,a{text-decoration:none}#logo a,.form-table th p,h1{f
 <script type="text/javascript">
 var wp_install = new function() {
 	
-	this.data = {};
+	this.data = <?php echo $this->config_json ?>;
 	this.data.step = "first";
 	
 	this.$step = $();
