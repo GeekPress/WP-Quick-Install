@@ -666,17 +666,76 @@ var wp_install = new function() {
 		// show current step
 		this.$step.fadeIn(200);
 		
-		if(this.data["auto_submit"]) this.submit();
+		if(this.data["auto_submit"] || this.data["auto_installer"]) {
+			
+			var submit_button = this.$step.find(":input");
+			if(submit_button.length > 1) submit_button.click();
+			else this.submit();
+		}
 		
 	}
 	
 	this.refreshProps = function() {
 		this.$step = $("*[step=" + this.data.step + "]");
+		
+		populateForm(this.$step, this.data);
 	}
 	
 	this.submitted();
 	
 }
+
+function populateForm(frm, data) {
+	
+	data = flat_obj(data);
+	  
+	$.each(data, function(key, value) {
+		
+		var $ctrl = $('[name="'+key+'"]', frm); 
+		
+		if($ctrl.is('select')) {
+			
+			$("option", $ctrl).each(function() {
+				this.selected= (this.value == value);
+			});
+		}
+		else if ($ctrl.is('textarea')) {
+            $ctrl.val(value);
+        } 
+		else switch($ctrl.attr("type"))  
+		{  
+			case "radio":
+			case "checkbox":   
+				$ctrl.each(function() {
+					if($(this).attr('value') == value) {
+						$(this).attr("checked", true);
+					}
+				});   
+				break;
+			default:
+				$ctrl.val(value);
+		} 
+	});
+}
+
+function flat_obj(obj, ret, parent){
+
+	if(!ret) ret = {};
+	if(!parent) parent = '';
+
+	if(typeof obj == 'object') for(var key in obj)
+	{
+		var child = !parent ? key : parent + '[' + key + ']';
+		ret = arguments.callee(obj[key], ret, child);
+	}
+	else
+	{
+		ret[parent] = obj;
+	}
+	
+	return ret;
+}
+
 </script>
 
 	</body>
