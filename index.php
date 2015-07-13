@@ -23,7 +23,7 @@ ob_start();
 
 <?php
 
-$config_json = ob_get_clean();
+$config_json = json_decode(ob_get_clean(), true);
 
 class wp_quick_install {
 	
