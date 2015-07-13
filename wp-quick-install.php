@@ -14,7 +14,7 @@ class wp_quick_install {
 	var $data = array();
 	var $error = array();
 	
-	function __construct($config_json = "{}") { 
+	function __construct($user_config = array()) { 
         
 		// time limit
 		@set_time_limit(120);
@@ -23,7 +23,7 @@ class wp_quick_install {
 		$this->error_log();
 		
 		// user config
-		$this->config_json = $config_json;
+		$this->user_config = $user_config;
 		
 		// sets data
 		if($_POST["data"]) $this->data = $_POST["data"];
@@ -585,7 +585,7 @@ a img,abbr{border:0}#logo a,a{text-decoration:none}#logo a,.form-table th p,h1{f
 <script type="text/javascript">
 var wp_install = new function() {
 	
-	this.data = <?php echo $this->config_json ?>;
+	this.data = <?php echo json_encode($this->user_config) ?>;
 	this.data.step = "first";
 	
 	this.$step = $();
@@ -732,4 +732,3 @@ $WPQI_Installer_Skin = function() {
 
 // go
 new wp_quick_install($user_config);
-
