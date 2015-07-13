@@ -645,7 +645,7 @@ var wp_install = new function() {
 		this.refreshProps();
 		
 		// show current step
-		this.$step.fadeIn(.1);
+		this.$step.fadeIn(200);
 		
 		if(this.data["auto_submit"]) this.submit();
 		
