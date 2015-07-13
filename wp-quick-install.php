@@ -26,7 +26,7 @@ class wp_quick_install {
 		$this->user_config = $user_config;
 		
 		// sets data
-		if($_POST["data"]) $this->data = $_POST["data"];
+		if($_POST["json"]) $this->data = json_decode($_POST["json"], true);
 		
 		// no submit by default
 		$this->data["auto_submit"] = false;
@@ -600,7 +600,7 @@ var wp_install = new function() {
 		this.$step.find(":input").prop("disabled", true);
 		
 		$(".spinner").stop().fadeOut(0).fadeIn(3000);
-		$.post("", { "data": this.data }).always($.proxy(this.submitted, this));
+		$.post("", { "json": JSON.stringify(this.data) }).always($.proxy(this.submitted, this));
 		
 		return false;
 	}
