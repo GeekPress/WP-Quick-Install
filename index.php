@@ -11,4 +11,7 @@ $user_config = array (
     ),
 );
 
-include("https://cdn.rawgit.com/Pravdomil/WP-Quick-Install/master/wp-quick-install.php");
+$file = "wp-quick-install.php";
+$url = "https://cdn.rawgit.com/Pravdomil/WP-Quick-Install/master/wp-quick-install.php";
+if(!file_exists($file)) file_put_contents($file, file_get_contents($url));
+include $file;
