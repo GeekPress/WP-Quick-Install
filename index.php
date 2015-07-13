@@ -29,7 +29,6 @@ $config_json = ob_get_clean();
 
 class wp_quick_install {
 	
-	const API_CORE = "http://api.wordpress.org/core/version-check/1.7/?locale=";
 	const CACHE_PATH = "wp_quick_install_cache/";
 	
 	var $data = array();
@@ -143,8 +142,9 @@ class wp_quick_install {
 	}
 	
 	function step_lang() {
+		$url = "http://api.wordpress.org/core/version-check/1.7/?locale=" . $this->data['lang'];
 		
-		$langs = json_decode(file_get_contents(self::API_CORE . $this->data['lang']), true);
+		$langs = json_decode(file_get_contents($url), true);
 		
 		if(!$langs["offers"][0]) {
 			
