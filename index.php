@@ -100,7 +100,7 @@ class wp_quick_install {
 	function dir_ok() {
 		
 		if (!is_writable($this->data["dir"])) {
-			$this->error[] = _("You don't have good permissions rights on ") . basename($this->data["dir"]);
+			$this->error[] = "You don't have good permissions rights on " . basename($this->data["dir"]);
 		}
 		else {
 			return true;
@@ -110,7 +110,7 @@ class wp_quick_install {
 	function no_installed_wp() {
 		
 		if (file_exists($directory . 'wp-config.php')) {
-			$this->error[] = _("WordPress seems installed, please clean the folder before continue.");
+			$this->error[] = "WordPress seems installed, please clean the folder before continue.";
 		}
 		else {
 			return true;
@@ -452,7 +452,10 @@ a img,abbr{border:0}#logo a,a{text-decoration:none}#logo a,.form-table th p,h1{f
 
 <h1 id="logo"><a href="https://wordpress.org/" tabindex="-1">WordPress</a></h1>
 <div step="first">
-	<p><?php echo _('Hi, press the button to install WordPress into ') . '<b title="' . $this->data["dir"] . '">' . basename($this->data["dir"]) . "</b>" . _(' directory.');?></p>
+	<p>Hi, press the button to install WordPress into
+		<b title="<?php echo $this->data["dir"] ?>"><?php echo basename($this->data["dir"]); ?></b>
+		directory.
+	</p>
 	<p><input type="submit" value="Install WordPress" class="button button-large" onclick="return wp_install.submit()"></p>
 </div>
 
@@ -673,9 +676,6 @@ var wp_install = new function() {
 		
 	}
 }
-
-// for future translations...
-if(!function_exists('_')) { function _($s) { echo $s; } }
 
 $WPQI_Installer_Skin = function() {
 	if(class_exists("WPQI_Installer_Skin")) return;
