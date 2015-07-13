@@ -396,8 +396,9 @@ class wp_quick_install {
 		
 		if($this->data['set_avatar']) update_option("avatar_default", "identicon");
 		
-		unlink($this->dir . "index.php");
-		rename($this->dir . "index.php.orig", $this->dir . "index.php");
+		unlink($this->data["dir"] . "/index.php");
+		unlink($this->data["dir"] . "/wp-quick-install.php")
+		rename($this->data["dir"] . "/index.php.orig", $this->data["dir"] . "/index.php");
 		
 		$this->data["step"] = "redirect";
 		$this->data["redirect_url"] = get_admin_url();
