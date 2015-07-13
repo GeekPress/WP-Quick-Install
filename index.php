@@ -25,8 +25,6 @@ ob_start();
 
 $config_json = ob_get_clean();
 
-@set_time_limit(120);
-
 class wp_quick_install {
 	
 	const CACHE_PATH = "wp_quick_install_cache/";
@@ -36,6 +34,9 @@ class wp_quick_install {
 	
 	function __construct($initData = array()) { 
         
+		// time limit
+		@set_time_limit(120);
+		
 		// error reporting
 		$this->error_log();
 		
