@@ -17,8 +17,21 @@ Instructions
 Auto installer
 ================
 
-TODO
+Open and edit index.php to create automatic installer. Follow instructions in file.
 
+Config is in JSON format, eg:
+```
+{
+	"auto_installer": true,
+	"db": {
+		"name": "wordpress",
+		"user": "admin",
+		"pwd": "",
+		"host": "localhost",
+		"prefix": "wp_",
+	},
+}
+```
 
 Features
 ================
