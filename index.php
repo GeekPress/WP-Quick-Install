@@ -294,8 +294,6 @@ class wp_quick_install {
 		file_put_contents($config_path, $config);
 		@chmod($config_path, 0666);
 		
-		// for syntax check
-		include($config_path);
 	}
 	
 	function load_wp_core() {
