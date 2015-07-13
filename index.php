@@ -454,7 +454,7 @@ a img,abbr{border:0}#logo a,a{text-decoration:none}#logo a,.form-table th p,h1{f
 	<table class="form-table">
 		<tr>
 			<th scope="row"><label for="dbname">Database Name</label></th>
-			<td><input name="db[name]" id="dbname" type="text" size="25" value="woddpress" required></td>
+			<td><input name="db[name]" id="dbname" type="text" size="25" value="wordpress" required></td>
 			<td>The name of the database you want to run WP in.</td>
 		</tr>
 		<tr>
