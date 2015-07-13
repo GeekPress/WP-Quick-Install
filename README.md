@@ -46,3 +46,14 @@ Features
 + Set static front page
 + Set default avatar
 + Create predefined user installer
+
+Know issues
+================
+
++ Installer does not work properly, more coding needed
+
+
+Future
+================
+
++ Merge config and more config form
