@@ -608,14 +608,14 @@ var wp_install = new function() {
 	
 	this.submit = function() {
 		
-		$("#error").fadeOut(0);
+		$("#error").stop().fadeOut(0);
 		
 		var formData = this.$step.find("form").serializeObject();
 		$.extend(this.data, formData);
 		
 		this.$step.find(":input").prop("disabled", true);
 		
-		$(".spinner").fadeOut(0).fadeIn(3000);
+		$(".spinner").stop().fadeOut(0).fadeIn(3000);
 		$.post("", { "data": this.data }).always($.proxy(this.submitted, this));
 		
 		return false;
