@@ -18,7 +18,7 @@ ob_start();
 // PUT YOUR CONFIGURATION HERE ?>
 
 {
-	
+	"not_implemented" : "yet",
 }
 
 <?php
