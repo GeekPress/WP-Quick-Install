@@ -252,16 +252,18 @@ class wp_quick_install {
 	
 	function replace_const(&$config, $const, $value) {
 		
-		$const = addcslashes(preg_quote($const), '\'');
-		$value = addcslashes(preg_quote($value), '\'');
+		$const = addcslashes($const, '\'');
+		$value = addcslashes($value, '\'');
 		
-		$config = preg_replace("/(define\('" . $const . "',\s*').+('\))/", '$1' . $value . '$2', $config);
+		$uniqid = " " . uniqid();
+		$config = preg_replace("/(define\('" . $const . "',\s*').+('\))/", '$1' . $uniqid . '$2', $config);
+		$config = str_replace($uniqid, $value, $config);
 	}
 	
 	function replace_var(&$config, $var, $value) {
 		
-		$var = addcslashes(preg_quote($var), '\'');
-		$value = addcslashes(preg_quote($value), '\'');
+		$var = addcslashes($var, '\'');
+		$value = addcslashes($value, '\'');
 		
 		$config = preg_replace("/(\\\$" . $var . "\s*=\s*').+(')/", '$1' . $value . '$2', $config);
 	}
