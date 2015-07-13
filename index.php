@@ -480,7 +480,7 @@ a img,abbr{border:0}#logo a,a{text-decoration:none}#logo a,.form-table th p,h1{f
 		</tr>
 		<tr>
 			<th scope="row"><label for="prefix">Table Prefix</label></th>
-			<td><input name="db[prefix]" id="prefix" type="text" value="<?php echo basename(__DIR__) ?>_" size="25" required pattern="[a-zA-Z0-9_]+"></td>
+			<td><input name="db[prefix]" id="prefix" type="text" value="<?php echo preg_replace("/[^a-Ž0-9_]/", "_", basename(__DIR__)) ?>_" size="25" required pattern="[a-zA-Z0-9_]+"></td>
 			<td>If you want to run multiple WordPress installations in a single database, change this.</td>
 		</tr>
 	</table>
