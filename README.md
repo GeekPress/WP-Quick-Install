@@ -19,18 +19,18 @@ Auto installer
 
 Open and edit index.php to create automatic installer. Follow instructions in file.
 
-Config is in JSON format, eg:
+Config is in PHP format, eg:
 ```
-{
-	"auto_installer": true,
-	"db": {
-		"name": "wordpress",
-		"user": "admin",
-		"pwd": "",
-		"host": "localhost",
-		"prefix": "wp_",
-	},
-}
+$user_config = array(
+    "auto_installer" => false,
+    "db" => array(
+        "name" => "wordpress",
+        "user" => "",
+        "pwd" => "",
+        "host" => "localhost",
+        "prefix" => "wp_",
+    ),
+);
 ```
 
 Features
