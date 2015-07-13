@@ -14,6 +14,12 @@ Instructions
 2) Visit the folder from browser (eg. yoursite.com/wp)
 
 
+Auto installer
+================
+
+TODO
+
+
 Features
 ================
 
@@ -26,3 +32,4 @@ Features
 + Set permalinks
 + Set static front page
 + Set default avatar
++ Create predefined user installer
