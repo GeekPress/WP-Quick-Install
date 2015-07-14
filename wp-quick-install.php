@@ -639,18 +639,18 @@ var wp_install = new function() {
 		// show current step
 		this.$step.fadeIn(200);
 		
+		// redirect
+		if(this.data.step == "redirect") {
+			location.href = this.data.redirect_url;
+			return;
+		}
+		
 		if(this.data["auto_submit"] || this.data["auto_installer"]) {
 			
 			var forms = this.$step.find("form");
 			if(forms.length) forms.find(":submit").click();
 			else this.submit();
 		}
-		
-		// redirect
-		if(this.data.step == "redirect") {
-			location.href = this.data.redirect_url;
-		}
-		
 	}
 	
 	this.refreshProps = function() {
