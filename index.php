@@ -1,7 +1,7 @@
 <?php
 
 $user_config = array(
-	'auto_installer' => false,
+	//'auto_installer' => true,
 	'db' => array(
 		//'name' => 'wordpress',
 		//'user' => '',

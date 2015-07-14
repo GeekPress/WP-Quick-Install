@@ -298,9 +298,7 @@ class wp_quick_install {
 			return;
 		}
 		
-		$this->data["url"] = $result['url'];
 		$this->data["step"] = "more";
-		
 	}
 	
 	function delete_default_content() {
@@ -643,8 +641,8 @@ var wp_install = new function() {
 		
 		if(this.data["auto_submit"] || this.data["auto_installer"]) {
 			
-			var submit_button = this.$step.find(":input");
-			if(submit_button.length > 1) submit_button.click();
+			var forms = this.$step.find("form");
+			if(forms.length) forms.find(":submit").click();
 			else this.submit();
 		}
 		
