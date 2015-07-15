@@ -300,7 +300,7 @@ class wp_quick_install {
 		$const = addcslashes($const, '\'');
 		$value = addcslashes($value, '\'');
 		
-		$uniqid = " " . uniqid();
+		$uniqid = " " . uniqid() . " ";
 		$config = preg_replace("/(define\('" . $const . "',\s*').+('\))/", '$1' . $uniqid . '$2', $config);
 		$config = str_replace($uniqid, $value, $config);
 	}
@@ -310,7 +310,9 @@ class wp_quick_install {
 		$var = addcslashes($var, '\'');
 		$value = addcslashes($value, '\'');
 		
-		$config = preg_replace("/(\\\$" . $var . "\s*=\s*').+(')/", '$1' . $value . '$2', $config);
+		$uniqid = " " . uniqid() . " ";
+		$config = preg_replace("/(\\\$" . $var . "\s*=\s*').+(')/", '$1' . $uniqid . '$2', $config);
+		$config = str_replace($uniqid, $value, $config);
 	}
 	
 	function load_wp_core() {
