@@ -742,7 +742,7 @@ var wp_install = new function() {
 			function(arg1, callback) {
 				
 				this.info("Installing plugins...");
-				this.phpFunc("install_plugin", callback);
+				this.phpFunc("install_plugins", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
