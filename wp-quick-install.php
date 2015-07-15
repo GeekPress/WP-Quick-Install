@@ -599,6 +599,17 @@ var wp_install = new function() {
 	this.data = <?php echo json_encode($this->user_config) ?>;
 	
 	this.dataCookie = function(val) {
+		
+		// do not save db prefix in cookie
+		if(typeof val === "object" && val.hasOwnProperty("db")) {
+			
+			var data = $.extend({}, val);
+			
+			delete data.db.prefix;
+			
+			val = data;
+		}
+		
 		return $.cookie("wp_quick_install_data", val);
 	}
 	
