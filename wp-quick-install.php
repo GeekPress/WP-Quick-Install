@@ -622,7 +622,7 @@ var wp_install = new function() {
 			val = clone;
 		}
 		
-		return $.cookie("wp_quick_install_data", val);
+		return $.cookie("wp_quick_install_data", val, { path: '/' });
 	}
 	
 	if(!this.data) {
