@@ -68,7 +68,7 @@ class wp_quick_install {
 	
 	function error_handler($errno, $str, $file, $line, $context) {
 		if (!error_reporting()) return true; // silence operator @
-		if (!(4983 & $errno)) return true;
+		if (!(5111 & $errno)) return true; // http://www.bx.com.au/tools/ultimate-php-error-reporting-wizard
     	
 		$msg = $str . " line " . $line;
 		$msg = trim($msg);
@@ -283,7 +283,7 @@ class wp_quick_install {
 		$secret_keys = file_get_contents('https://api.wordpress.org/secret-key/1.1/salt/');
 		
 		if ( !$secret_keys ) {
-			trigger_error("Cannot retrieve secret keys.", E_WARNING);
+			trigger_error("Cannot retrieve secret keys.", E_USER_ERROR);
 			return;
 		}
 		
