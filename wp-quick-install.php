@@ -600,14 +600,21 @@ var wp_install = new function() {
 	
 	this.dataCookie = function(val) {
 		
-		// do not save db prefix in cookie
-		if(typeof val === "object" && val.hasOwnProperty("db")) {
+		// do not store dynamic variables in cookie
+		if(typeof val === "object") {
 			
-			var data = $.extend({}, val);
+			var clone = $.extend(true, {}, val);
 			
-			delete data.db.prefix;
+			if(clone.hasOwnProperty("db")) delete clone.db.prefix;
 			
-			val = data;
+			if(clone.hasOwnProperty("config"))
+			{
+				delete clone.config.site_title;
+				delete clone.config.username;
+				delete clone.config.password;
+			}
+			
+			val = clone;
 		}
 		
 		return $.cookie("wp_quick_install_data", val);
