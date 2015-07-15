@@ -106,7 +106,12 @@ class wp_quick_install {
 		
 		try {
 			$dsn = "mysql:host=" . $this->data["db"]["host"] . ";dbname=" . $this->data["db"]["name"] ;
-			new PDO($dsn, $this->data["db"]["user"], $this->data["db"]["pwd"]);
+			$pdo = new PDO($dsn, $this->data["db"]["user"], $this->data["db"]["pwd"]);
+			
+			$result = $pdo->query("SELECT 1 FROM " . $this->data["db"]["prefix"] . "users LIMIT 1");
+			
+			if($result) $this->error[] = "Table prefix already in use. Choose a different or clean up.";
+		    
 		}
 		catch (Exception $e) {
 			$this->error[] = "Error establishing database connection.";
