@@ -92,8 +92,12 @@ class wp_quick_install {
 	}
 	
 	function _no_installed_wp() {
+		$config = file_exists($this->data["dir"] . '/wp-config.php');
+		$admin = file_exists($this->data["dir"] . '/wp-admin');
+		$content = file_exists($this->data["dir"] . '/wp-content');
+		$includes = file_exists($this->data["dir"] . '/wp-includes');
 		
-		if (file_exists($this->data["dir"] . '/wp-config.php')) {
+		if ($config || $admin || $content || $includes) {
 			$this->error[] = "WordPress seems installed, please clean the folder before continue.";
 		}
 	}
