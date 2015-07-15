@@ -250,21 +250,21 @@ class wp_quick_install {
 		if($this->data["more"]["no_default_content"]) $this->delete_default_content();
 	}
 	
-	function _install_themes() {
-		
-		$this->load_wp_core();
-		
-		if($this->data["more"]["themes"]) {
-			$this->wp_install_themes(explode("\n", $this->data["more"]["themes"]));
-		}
-	}
-	
 	function _install_plugins() {
 		
 		$this->load_wp_core();
 		
 		if($this->data["more"]["plugins"]) {
 			$this->wp_install_plugins(explode("\n", $this->data["more"]["plugins"]));
+		}
+	}
+	
+	function _install_themes() {
+		
+		$this->load_wp_core();
+		
+		if($this->data["more"]["themes"]) {
+			$this->wp_install_themes(explode("\n", $this->data["more"]["themes"]));
 		}
 	}
 	
