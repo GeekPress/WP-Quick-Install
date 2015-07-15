@@ -592,6 +592,8 @@ foreach ( $langs as $l ) {
 
 <script type="text/javascript">
 
+$.cookie.json = true;
+
 var wp_install = new function() {
 	
 	this.data = <?php echo json_encode($this->user_config) ?>;
