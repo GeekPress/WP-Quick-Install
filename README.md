@@ -25,3 +25,7 @@ Features
  - Delete default plugins and templates
  - Download, install and activate plugins and themes
  - Create predefined user installer
+
+Screenshot
+----------
+![Install screen](screenshot.png)
