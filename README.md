@@ -26,6 +26,6 @@ Screenshot
 ----------
 ![Install screen](screenshot.png)
 
-Custom config, silent installer
----------------------------------
+Custom config, auto installer
+-----------------------------
 Open index.php and follow the instructions.

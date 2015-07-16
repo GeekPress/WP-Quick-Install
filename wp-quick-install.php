@@ -26,7 +26,7 @@ class wp_quick_install {
 		$this->error_report();
 		
 		// user config
-		if(is_array($user_config)) $this->user_config = $user_config;
+		$this->user_config = $user_config;
 		
 		// setup data array
 		if($_POST["data"]) $this->data = json_decode($_POST["data"], true);
@@ -602,6 +602,10 @@ $.cookie.json = true;
 var wp_install = new function() {
 	
 	this.data = <?php echo json_encode($this->user_config) ?>;
+	if(typeof this.data !== "object") this.data = {};
+	if(this.data.db.constructor !== Object) this.data.db = {};
+	if(this.data.config.constructor !== Object) this.data.config = {};
+	if(this.data.more.constructor !== Object) this.data.more = {};
 	
 	this.dataCookie = function(val) {
 		
@@ -625,10 +629,9 @@ var wp_install = new function() {
 		return $.cookie("wp_quick_install_data", val, { path: '/' });
 	}
 	
-	if(!this.data) {
-		this.dataFromCookie = true;
-		this.data = this.dataCookie();
-		if(typeof this.data !== "object") this.data = {};
+	var cookie = this.dataCookie();
+	if(typeof cookie === "object") {
+		this.data = $.extend(true, cookie, this.data);
 	}
 	
 	this.$info = $("#info");
@@ -672,7 +675,8 @@ var wp_install = new function() {
 	this.step_db_submit = function() {
 		
 		this.extendDataFromInputs();
-		if(this.dataFromCookie) this.dataCookie(this.data);
+		
+		this.dataCookie(this.data);
 		
 		async.waterfall(
 			[
@@ -697,7 +701,7 @@ var wp_install = new function() {
 		
 		this.extendDataFromInputs();
 		
-		if(this.dataFromCookie) this.dataCookie(this.data);
+		this.dataCookie(this.data);
 		
 		this.$step.hide();
 		this.$info.show();
@@ -840,7 +844,7 @@ var wp_install = new function() {
 	
 	this.extendDataFromInputs = function() {
 		var formData = this.$step.find("form").serializeObject();
-		$.extend(this.data, formData);
+		$.extend(true, this.data, formData);
 	}
 	
 	this.next_step("first");
