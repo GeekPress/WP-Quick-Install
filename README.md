@@ -1,6 +1,6 @@
 WP Quick Install
 ================
-The easiest way to install WordPress.
+The easiest way to install WordPress. One file installer.
 
 A lightweight script which automatically downloads and install WordPress, plugins and themes.
 
