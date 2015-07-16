@@ -1,8 +1,8 @@
 WP Quick Install
 ================
-The easiest way to install WordPress. One file installer.
+The easiest way how to install WordPress - one file installer.
 
-A lightweight script which automatically downloads and install WordPress, plugins and themes.
+Upload index.php and visit from browser.
 
 Instructions
 ------------
@@ -11,12 +11,12 @@ Instructions
 
 Features
 --------
- - Setup database
- - Select language
- - Create users
+ - Create wp-config
+ - Choose language
+ - Create admin user
  - Set basic site settings
  - Set static front page
- - Set permalinks
+ - Set permalink structure
  - Set default avatar
  - Delete default plugins and templates
  - Download, install and activate plugins and themes
