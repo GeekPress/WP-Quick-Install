@@ -9,10 +9,6 @@ Instructions
  1. **Upload index.php in folder you want have WordPress installed**
  2. Visit the folder from internet browser
 
-Custom config, silent installer
----------------------------------
-Open index.php and follow the instructions.
-
 Features
 --------
  - Setup database
@@ -29,3 +25,7 @@ Features
 Screenshot
 ----------
 ![Install screen](screenshot.png)
+
+Custom config, silent installer
+---------------------------------
+Open index.php and follow the instructions.
