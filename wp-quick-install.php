@@ -601,39 +601,6 @@ $.cookie.json = true;
 
 var wp_install = new function() {
 	
-	this.data = <?php echo json_encode($this->user_config) ?>;
-	if(!this.data || this.data.constructor !== Object) this.data = {};
-	if(!this.data.db || this.data.db.constructor !== Object) this.data.db = {};
-	if(!this.data.config || this.data.config.constructor !== Object) this.data.config = {};
-	if(!this.data.more || this.data.more.constructor !== Object) this.data.more = {};
-	
-	this.dataCookie = function(val) {
-		
-		// do not store dynamic variables in cookie
-		if(typeof val === "object") {
-			
-			var clone = $.extend(true, {}, val);
-			
-			if(clone.hasOwnProperty("db")) delete clone.db.prefix;
-			
-			if(clone.hasOwnProperty("config"))
-			{
-				delete clone.config.site_title;
-				delete clone.config.username;
-				delete clone.config.password;
-			}
-			
-			val = clone;
-		}
-		
-		return $.cookie("wp_quick_install_data", val, { path: '/' });
-	}
-	
-	var cookie = this.dataCookie();
-	if(typeof cookie === "object") {
-		this.data = $.extend(true, cookie, this.data);
-	}
-	
 	this.$info = $("#info");
 	
 	this.info = function(msg) {
@@ -847,6 +814,44 @@ var wp_install = new function() {
 		$.extend(true, this.data, formData);
 	}
 	
+	this.dataCookie = function(val) {
+		
+		// do not store dynamic variables in cookie
+		if(typeof val === "object") {
+			
+			var clone = $.extend(true, {}, val);
+			
+			if(clone.hasOwnProperty("db")) delete clone.db.prefix;
+			
+			if(clone.hasOwnProperty("config"))
+			{
+				delete clone.config.site_title;
+				delete clone.config.username;
+				delete clone.config.password;
+			}
+			
+			val = clone;
+		}
+		
+		return $.cookie("wp_quick_install_data", val, { path: '/' });
+	}
+	
+	this.initData = function() {
+		this.data = <?php echo json_encode($this->user_config) ?>;
+		
+		if(!this.data || this.data.constructor !== Object) {
+			this.data = {};
+			this.info("User config not recognized");
+		}
+		if(!this.data.db || this.data.db.constructor !== Object) this.data.db = {};
+		if(!this.data.config || this.data.config.constructor !== Object) this.data.config = {};
+		if(!this.data.more || this.data.more.constructor !== Object) this.data.more = {};
+		
+		var cookie = this.dataCookie();
+		if(typeof cookie === "object") this.data = $.extend(true, cookie, this.data);
+	}
+	
+	this.initData();
 	this.next_step("first");
 	
 }
