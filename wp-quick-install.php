@@ -535,7 +535,7 @@ foreach ( $langs as $l ) {
 		<tr>
 			<th scope="row">Front page</th>
 			<td><label>
-				<input type="checkbox" name="more[page_on_front]" value="1">
+				<input type="checkbox" name="more[page_on_front]" value="1" checked>
 				Static page
 			</label></td>
 		</tr>
@@ -545,20 +545,20 @@ foreach ( $langs as $l ) {
 				<p>For example /%postname%/</p>
 			</th>
 			<td>
-				<input name="more[permalink_str]" type="text" id="permalink_str" size="25">
+				<input name="more[permalink_str]" type="text" id="permalink_str" size="25" value="/%postname%/">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">Default avatar</th>
 			<td><label>
-				<input type="checkbox" name="more[avatar]" value="identicon">
+				<input type="checkbox" name="more[avatar]" value="identicon" checked>
 				Identicon
 			</label></td>
 		</tr>
 		<tr>
 			<th scope="row">Default content</th>
 			<td><label>
-				<input type="checkbox" name="more[no_default_content]" value="1">
+				<input type="checkbox" name="more[no_default_content]" value="1" checked>
 				Delete default themes and plugins
 			</label></td>
 		</tr>

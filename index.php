@@ -18,7 +18,7 @@ For auto installer: set skip_welcome, submit_db, submit_config to true
 
 $user_config = <<<EOD
 {
-    "skip_welcome": false,
+    //"skip_welcome": false,
 	
     "db":{  
         //"name": "wordpress",
@@ -27,7 +27,7 @@ $user_config = <<<EOD
         //"host": "localhost",
         //"prefix": "wp_"
     },
-    "submit_db": false,
+    //"submit_db": false,
 	
     "config":{  
         //"lang": "",
@@ -38,14 +38,14 @@ $user_config = <<<EOD
         //"blog_public": true
     },
     "more":{  
-        "page_on_front": true,
-        "permalink_str": "/%postname%/",
-        "avatar": "identicon",
-        "no_default_content": true,
-        "themes": "",
-        "plugins": ""
-    },
-    "submit_config": false
+        //"page_on_front": false,
+        //"permalink_str": "",
+        //"avatar": "",
+        //"no_default_content": false,
+        //"themes": "",
+        //"plugins": ""
+    }
+    //,"submit_config": false
 }
 EOD;
 
