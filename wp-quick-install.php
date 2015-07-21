@@ -585,6 +585,8 @@ foreach ( $langs as $l ) {
 	<p><span id="error_msg"></span> <small><a href="javascript:wp_install.submit()">try again</a></small></p>
 </div>
 
+<p><small><a href="javascript:wp_install.importExport()">Import/export configuration</a></small></p>
+
 <div style="height: 20px"><div class="spinner"></div></div>
 
 	</body>
@@ -787,24 +789,25 @@ var wp_install = new function() {
 	}
 	
 	this.next_step = function(name) {
-		if(this.$step) {
-			this.$step.hide();
+		if(name)
+		{
+			if(this.$step) this.$step.hide();
+		
+			this.step = name;
+		
+			this.$step = $("*[step=" + this.step + "]");
 		}
-		
-		this.data.step = name;
-		
-		this.$step = $("*[step=" + this.data.step + "]");
 		
 		populateForm(this.$step, this.data);
 		
 		this.$step.fadeIn(200);
 		
-		this["step_" + this.data.step]();
+		this["step_" + this.step]();
 	}
 	
 	this.submit = function() {
 		
-		this["step_" + this.data.step + "_submit"]();
+		this["step_" + this.step + "_submit"]();
 		
 		return false;
 	}
@@ -849,6 +852,22 @@ var wp_install = new function() {
 		
 		var cookie = this.dataCookie();
 		if(typeof cookie === "object") this.data = $.extend(true, cookie, this.data);
+	}
+	
+	this.importExport = function() {
+		
+		this.extendDataFromInputs();
+		var exprt = this.dataCookie(this.data);
+		
+		var imprt = prompt("Copy pro export.\nPaste and enter for import.", JSON.stringify(exprt));
+		
+		if(imprt === null) return; // cancel pressed
+		
+		if(imprt) imprt = JSON.parse(imprt);
+		this.dataCookie(imprt);
+		
+		this.initData();
+		this.next_step();
 	}
 	
 	this.initData();
