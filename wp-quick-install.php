@@ -603,9 +603,9 @@ var wp_install = new function() {
 	
 	this.data = <?php echo json_encode($this->user_config) ?>;
 	if(typeof this.data !== "object") this.data = {};
-	if(this.data.db.constructor !== Object) this.data.db = {};
-	if(this.data.config.constructor !== Object) this.data.config = {};
-	if(this.data.more.constructor !== Object) this.data.more = {};
+	if(!this.data.db || this.data.db.constructor !== Object) this.data.db = {};
+	if(!this.data.config || this.data.config.constructor !== Object) this.data.config = {};
+	if(!this.data.more || this.data.more.constructor !== Object) this.data.more = {};
 	
 	this.dataCookie = function(val) {
 		
