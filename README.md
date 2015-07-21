@@ -22,6 +22,7 @@ Features
  - Download, install and activate plugins and themes
  - Create predefined user installer
  - Save configuration in cookie
+ - Import/export configuration
 
 Screenshot
 ----------
