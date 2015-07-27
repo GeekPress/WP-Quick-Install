@@ -780,7 +780,7 @@ var wp_install = new function() {
 	this.ajaxBegin = function() {
 		$("#error").stop().fadeOut(100);
 		this.$step.find(":input").prop("disabled", true);
-		$(".spinner").stop().fadeIn(3000);
+		$(".spinner").stop().fadeIn(1000);
 	}
 	
 	this.ajaxComplete = function() {
