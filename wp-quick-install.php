@@ -1,10 +1,15 @@
 <?php
 /*
-Script Name: WP Quick Install
-Author: Jonathan Buttigieg, Pravdomil Toman
+
+WP Quick Install
+
+Authors: Jonathan Buttigieg, Pravdomil Toman
 Contributors: Julio Potier
-Script URI: http://wp-quick-install.com
 Licence: GPLv3
+
+http://wp-quick-install.com
+https://github.com/Pravdomil/WP-Quick-Install
+
 */
 
 class wp_quick_install {
