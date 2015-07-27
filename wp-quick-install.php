@@ -530,7 +530,7 @@ foreach ( $langs as $l ) {
 		</tr>
 		<tr>
 			<th scope="row"></th>
-			<td colspan="2"><input type="submit" value="Launch the site" class="button-primary button-large"></td>
+			<td><input type="submit" value="Launch the site" class="button-primary button-large"></td>
 		</tr>
 	</table>
 	
@@ -580,6 +580,10 @@ foreach ( $langs as $l ) {
 				<p>Line separated, name or url, all will be activated.</p>
 			</th>
 			<td><textarea name="more[plugins]" type="text" id="plugins" size="25"></textarea></td>
+		</tr>
+		<tr>
+			<th scope="row"></th>
+			<td><input type="submit" value="Launch the site" class="button-primary button-large"></td>
 		</tr>
 	</table>
 </div>
