@@ -845,7 +845,9 @@ var wp_install = new function() {
 			val = clone;
 		}
 		
-		return $.cookie("wp_quick_install_data", val, { path: '/' });
+		var result = $.cookie("wp_quick_install_data", val, { path: '/' });
+		
+		return val || result;
 	}
 	
 	this.initData = function() {
