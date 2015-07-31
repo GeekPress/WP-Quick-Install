@@ -588,7 +588,7 @@ foreach ( $langs as $l ) {
 	</table>
 </div>
 
-<div id="info"></div>
+<div id="info"><p></p><progress value="0" max="10"></div>
 
 <div id="error">
 	<p><span id="error_msg"></span> <small><a href="javascript:wp_install.submit()">try again</a></small></p>
@@ -613,9 +613,10 @@ $.cookie.json = true;
 var wp_install = new function() {
 	
 	this.$info = $("#info");
+	this.$progress = this.$info.find("progress");
 	
 	this.info = function(msg) {
-		this.$info.text(msg);
+		this.$info.find("p", 0).text(msg);
 		console.log(msg);
 	}
 	
@@ -688,60 +689,70 @@ var wp_install = new function() {
 			function(callback) {
 
 				this.info("Getting zip url...");
+				this.$progress.val(0);
 				this.phpFunc("wp_zip_url", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Downloading from " + arg1.return);
+				this.$progress.val(1);
 				this.phpFunc("download_wp", callback, arg1.return);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Unzipping...");
+				this.$progress.val(2);
 				this.phpFunc("unzip", callback, arg1.return);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Configuring...");
+				this.$progress.val(3);
 				this.phpFunc("wp_config", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Installing...");
+				this.$progress.val(4);
 				this.phpFunc("install", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Doing more config...");
+				this.$progress.val(5);
 				this.phpFunc("more", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Installing plugins...");
+				this.$progress.val(6);
 				this.phpFunc("install_plugins", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Installing themes...");
+				this.$progress.val(7);
 				this.phpFunc("install_themes", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Finishing...");
+				this.$progress.val(8);
 				this.phpFunc("finish", callback);
 				
 			}.bind(this),
 			function(arg1, callback) {
 				
 				this.info("Redirecting...");
+				this.$progress.val(9);
 				location.href = arg1.return;
 				
 			}.bind(this),
