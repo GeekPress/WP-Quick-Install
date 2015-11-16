@@ -23,12 +23,12 @@ class wp_quick_install {
 	var $user_config = null;
 	
 	function __construct($user_config) { 
-        
-		// time limit
-		@set_time_limit(120);
 		
 		// setup error reporting
 		$this->error_report();
+		
+		// time limit
+		@set_time_limit(120);
 		
 		// user config
 		$this->user_config = $user_config;
