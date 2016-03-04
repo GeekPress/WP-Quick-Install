@@ -1,4 +1,4 @@
-WP Quick Install 1.4.1
+WP Quick Install 1.4.2
 ================
 
 WP Quick Install is the easiest way to install WordPress.
@@ -9,6 +9,10 @@ Simply download the .zip archive et go to *wp-quick-install/index.php*
 
 Changelog
 ================
+
+1.4.2
+-----------
+* Delete Tweentyfifteen & Tweentysixteen themes
 
 1.4.1
 -----------
