@@ -6,7 +6,7 @@ Upload index.php and visit from browser.
 
 Instructions
 ------------
- 1. **Upload index.php in folder you want have WordPress installed**
+ 1. **Upload [index.php](index.php) in folder you want have WordPress installed**
  2. Visit the folder from internet browser
 
 Features
@@ -30,4 +30,4 @@ Screenshot
 
 Custom config, auto installer
 -----------------------------
-Open index.php and follow the instructions.
+Open [index.php](index.php) and follow the instructions.
