@@ -617,7 +617,7 @@ var wp_install = new function() {
 	
 	this.info = function(msg) {
 		this.$info.find("p", 0).text(msg);
-		console.log(msg);
+		console.info(msg);
 	}
 	
 	this.step_first = function() {
