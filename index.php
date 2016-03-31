@@ -44,7 +44,7 @@ EOD;
 $user_config = json_decode(preg_replace("/\s\/\/.*/", "", $user_config), true);
 
 $file = "wp-quick-install.php";
-$url = "https://cdn.rawgit.com/Pravdomil/WP-Quick-Install/master/wp-quick-install.php";
+$url = "https://raw.githubusercontent.com/pravdomil/WP-Quick-Install/master/wp-quick-install.php";
 
 if(!file_exists($file))
 {
