@@ -859,7 +859,7 @@ var wp_install = new function() {
 		this.extendDataFromInputs();
 		var exprt = this.filterData(this.data);
 		
-		var imprt = prompt("Copy pro export.\nPaste and enter for import.", JSON.stringify(exprt));
+		var imprt = prompt("Copy for export.\nPaste and enter for import.", JSON.stringify(exprt));
 		
 		if(imprt === null) return; // cancel pressed
 		
