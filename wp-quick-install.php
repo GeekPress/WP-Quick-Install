@@ -602,13 +602,10 @@ foreach ( $langs as $l ) {
 </html>
 
 <script src="//code.jquery.com/jquery-1.8.3.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.0.0/jquery.serialize-object.compiled.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/async/1.3.0/async.js"></script>
 
 <script type="text/javascript">
-
-$.cookie.json = true;
 
 var wp_install = new function() {
 	
@@ -655,8 +652,6 @@ var wp_install = new function() {
 		
 		this.extendDataFromInputs();
 		
-		this.dataCookie(this.data);
-		
 		async.waterfall(
 			[
 				function(callback) {
@@ -679,8 +674,6 @@ var wp_install = new function() {
 	this.step_config_submit = function() {
 		
 		this.extendDataFromInputs();
-		
-		this.dataCookie(this.data);
 		
 		this.$step.hide();
 		this.$info.show();
@@ -837,33 +830,21 @@ var wp_install = new function() {
 		$.extend(true, this.data, formData);
 	}
 	
-	this.dataCookie = function(val) {
+	this.filterData = function(val) {
+		// do not store dynamic variables
+		var clone = $.extend(true, {}, val);
 		
-		// do not store dynamic variables in cookie
-		if(typeof val === "object") {
-			
-			var clone = $.extend(true, {}, val);
-			
-			if(clone.hasOwnProperty("db")) delete clone.db.prefix;
-			
-			if(clone.hasOwnProperty("config"))
-			{
-				delete clone.config.site_title;
-				delete clone.config.username;
-				delete clone.config.password;
-			}
-			
-			val = clone;
+		if(clone.hasOwnProperty("db")) delete clone.db.prefix;
+		
+		if(clone.hasOwnProperty("config")) {
+			delete clone.config.site_title;
+			delete clone.config.password;
 		}
 		
-		var result = $.cookie("wp_quick_install_data", val, { path: '/' });
-		
-		return val || result;
+		return clone;
 	}
 	
 	this.initData = function() {
-		this.data = <?php echo json_encode($this->user_config) ?>;
-		
 		if(!this.data || this.data.constructor !== Object) {
 			this.data = {};
 			this.info("User config not recognized");
@@ -871,30 +852,28 @@ var wp_install = new function() {
 		if(!this.data.db || this.data.db.constructor !== Object) this.data.db = {};
 		if(!this.data.config || this.data.config.constructor !== Object) this.data.config = {};
 		if(!this.data.more || this.data.more.constructor !== Object) this.data.more = {};
-		
-		var cookie = this.dataCookie();
-		if(typeof cookie === "object") this.data = $.extend(true, cookie, this.data);
 	}
 	
 	this.importExport = function() {
 		
 		this.extendDataFromInputs();
-		var exprt = this.dataCookie(this.data);
+		var exprt = this.filterData(this.data);
 		
 		var imprt = prompt("Copy pro export.\nPaste and enter for import.", JSON.stringify(exprt));
 		
 		if(imprt === null) return; // cancel pressed
 		
 		if(imprt) imprt = JSON.parse(imprt);
-		this.dataCookie(imprt);
+		this.data = this.filterData(imprt);
 		
 		this.initData();
 		this.next_step();
 	}
+  
+	this.data = <?php echo json_encode($this->user_config) ?>;
 	
 	this.initData();
 	this.next_step("first");
-	
 }
 
 function populateForm(frm, data) {
