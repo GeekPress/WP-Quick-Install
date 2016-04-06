@@ -214,7 +214,7 @@ $(document).ready(function() {
 				$('#debug').removeAttr('checked');
 			}
 		}
-		
+
 		if ( typeof data.wp_config.wpcom_api_key !='undefined' ) {
 			$('#wpcom_api_key').val(data.wp_config.wpcom_api_key);
 		}
@@ -311,7 +311,7 @@ $(document).ready(function() {
 	function install_wp() {
 		$response.html("<p>Database Installation in Progress...</p>");
 		$('.progress-bar').animate({width: "49.5%"});
-		$.post(window.location.href + '/wp-admin/install.php?action=install_wp', $('form').serialize(), function(data) {
+		$.post(window.location.href + '?action=install_wp', $('form').serialize(), function(data) {
 			install_theme();
 		});
 	}
@@ -320,7 +320,7 @@ $(document).ready(function() {
 	function install_theme() {
 		$response.html("<p>Theme Installation in Progress...</p>");
 		$('.progress-bar').animate({width: "66%"});
-		$.post(window.location.href + '/wp-admin/install.php?action=install_theme', $('form').serialize(), function(data) {
+		$.post(window.location.href + '?action=install_theme', $('form').serialize(), function(data) {
 			install_plugins();
 		});
 	}
