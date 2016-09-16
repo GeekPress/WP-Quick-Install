@@ -428,7 +428,6 @@ class wp_quick_install {
 		<meta charset="utf-8" />
 		<title>WP Quick Install</title>
 		<meta name="robots" content="noindex, nofollow">
-		<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C600italic%2C300%2C400%2C600&amp;subset=latin%2Clatin-ext'>
 		<link rel='stylesheet' href='https://cdn.rawgit.com/Pravdomil/WP-Quick-Install/master/style.css'>
 	</head>
 	<body class="wp-core-ui">
