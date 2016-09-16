@@ -428,7 +428,7 @@ class wp_quick_install {
 		<meta charset="utf-8" />
 		<title>WP Quick Install</title>
 		<meta name="robots" content="noindex, nofollow">
-		<link rel='stylesheet' href='https://cdn.rawgit.com/Pravdomil/WP-Quick-Install/master/style.css'>
+		<link rel="stylesheet" href="https://rawgit.com/pravdomil/WP-Quick-Install/master/style.css">
 	</head>
 	<body class="wp-core-ui">
 
