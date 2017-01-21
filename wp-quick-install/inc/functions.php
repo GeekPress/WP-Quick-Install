@@ -7,5 +7,6 @@ if ( ! function_exists( '_' ) ) {
 }
 
 function sanit( $str ) {
+	$str = basename( $str );
 	return addcslashes( str_replace( array( ';', "\n" ), '', $str ), '\\' );
 }
