@@ -6,7 +6,7 @@ Upload index.php and visit from browser.
 
 Instructions
 ------------
- 1. **Upload [index.php](index.php) in folder you want have WordPress installed**
+ 1. **Upload [index.php](https://raw.githubusercontent.com/pravdomil/WP-Quick-Install/master/index.php) in folder you want have WordPress installed**
  2. Visit the folder from internet browser
 
 Features
