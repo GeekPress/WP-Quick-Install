@@ -10,6 +10,12 @@ Simply download the .zip archive et go to *wp-quick-install/index.php*
 Changelog
 ================
 
+1.4.3
+-----------
+* Delete Tweentyseventeen
+* Add Random table_prefix
+* Add Random password suggested
+
 1.4.2
 -----------
 * Delete Tweentyfifteen & Tweentysixteen themes
