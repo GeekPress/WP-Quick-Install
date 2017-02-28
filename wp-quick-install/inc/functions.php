@@ -91,3 +91,31 @@ function random_table_prefix($length, array $excludes = array() ) {
    $prefix = implode( '', $first2) . implode( '', $last2) . '_';
    return $prefix;
 }
+function random_user($length, array $excludes = array() ){
+	$host = explode('.', $_SERVER['HTTP_HOST']);
+	foreach($host as $k => $v){
+		$h[$k] = $host[$k] = rtrim(trim($v),'/');
+	}
+	if($host[1] == 'uni5'){
+		$prefix = $host[0] . '_';
+	}
+	else {
+		$prefix = $host[1] . '_';
+	}
+
+	$length = $length < 8 ? 8 : $length;
+
+	$getlength = rand( 2, intval( $length / 4 ) );  // Allow at least two of each type
+	$remainder = $length - $getlength;
+
+	$getlength = rand( 2, intval( $remainder  / 3 ) );  // Allow at least two of each type
+	$remainder = $remainder - $getlength;
+	$digits = random_digits( $getlength, $excludes );
+
+	$lower = random_lcaseletters( $remainder, $excludes );
+
+	$user = array_merge( $lower, $digits );
+   	shuffle( $user );
+	$result = implode( '', $user );
+	return $prefix . $result;
+}

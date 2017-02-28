@@ -712,7 +712,7 @@ else { ?>
 					<tr>
 						<th scope="row"><label for="user_login"><?php echo _('Username');?></label></th>
 						<td>
-							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
+							<input name="user_login" type="text" id="user_login" size="25" value="<?php echo random_user(12); ?>" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
 						</td>
 					</tr>
