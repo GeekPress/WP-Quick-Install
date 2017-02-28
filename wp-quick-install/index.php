@@ -493,7 +493,11 @@ if ( isset( $_GET['action'] ) ) {
 				if ( ! empty( $_POST['plugins'] ) ) {
 
 					$plugins     = explode( ";", $_POST['plugins'] );
-					$plugins     = array_map( 'trim' , $plugins );
+					
+					foreach($plugins as $k => $v){
+						$plugins[$k] = rtrim(trim($v),'/');
+					}
+
 					$plugins_dir = $directory . 'wp-content/plugins/';
 
 					foreach ( $plugins as $plugin ) {
