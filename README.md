@@ -1,4 +1,4 @@
-WP Quick Install 1.4.2
+WP Quick Install 1.4.3
 ================
 
 WP Quick Install is the easiest way to install WordPress.
