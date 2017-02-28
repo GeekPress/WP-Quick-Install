@@ -4,9 +4,10 @@ Script Name: WP Quick Install
 Author: Jonathan Buttigieg
 Contributors: Julio Potier
 Script URI: http://wp-quick-install.com
-Version: 1.4.1
+Version: 1.4.3
 Licence: GPLv3
 Last Update: 08 jan 15
+
 */
 
 @set_time_limit( 0 );
@@ -40,6 +41,18 @@ $data = array();
 if ( file_exists( 'data.ini' ) ) {
 	$data = json_encode( parse_ini_file( 'data.ini' ) );
 }
+
+function curl_file_get_contents($URL)
+{
+	$c = curl_init();
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($c, CURLOPT_URL, $URL);
+	$contents = curl_exec($c);
+	curl_close($c);
+
+	if ($contents) return $contents;
+		else return FALSE;
+ }
 
 // We add  ../ to directory
 $directory = ! empty( $_POST['directory'] ) ? '../' . $_POST['directory'] . '/' : '../';
@@ -80,14 +93,15 @@ if ( isset( $_GET['action'] ) ) {
 			$language = substr( $_POST['language'], 0, 6 );
 
 			// Get WordPress data
-			$wp = json_decode( file_get_contents( WP_API_CORE . $language ) )->offers[0];
+			$wp = json_decode( curl_file_get_contents( WP_API_CORE . $language ) )->offers[0];
+			$wp->download = str_replace('http:', 'https:', $wp->download); // Prevent http result: 301 - Moved permanently
 
 			/*--------------------------*/
 			/*	We download the latest version of WordPress
 			/*--------------------------*/
 
 			if ( ! file_exists( WPQI_CACHE_CORE_PATH . 'wordpress-' . $wp->version . '-' . $language  . '.zip' ) ) {
-				file_put_contents( WPQI_CACHE_CORE_PATH . 'wordpress-' . $wp->version . '-' . $language  . '.zip', file_get_contents( $wp->download ) );
+				file_put_contents( WPQI_CACHE_CORE_PATH . 'wordpress-' . $wp->version . '-' . $language  . '.zip', curl_file_get_contents( $wp->download ) );
 			}
 
 			break;
@@ -98,7 +112,7 @@ if ( isset( $_GET['action'] ) ) {
 			$language = substr( $_POST['language'], 0, 6 );
 
 			// Get WordPress data
-			$wp = json_decode( file_get_contents( WP_API_CORE . $language ) )->offers[0];
+			$wp = json_decode( curl_file_get_contents( WP_API_CORE . $language ) )->offers[0];
 
 			/*--------------------------*/
 			/*	We create the website folder with the files and the WordPress folder
@@ -151,7 +165,7 @@ if ( isset( $_GET['action'] ) ) {
 				$config_file = file( $directory . 'wp-config-sample.php' );
 
 				// Managing the security keys
-				$secret_keys = explode( "\n", file_get_contents( 'https://api.wordpress.org/secret-key/1.1/salt/' ) );
+				$secret_keys = explode( "\n", curl_file_get_contents( 'https://api.wordpress.org/secret-key/1.1/salt/' ) );
 
 				foreach ( $secret_keys as $k => $v ) {
 					$secret_keys[$k] = substr( $v, 28, 64 );
@@ -280,16 +294,19 @@ if ( isset( $_GET['action'] ) ) {
 				/** Load wpdb */
 				require_once( $directory . 'wp-includes/wp-db.php' );
 
+				// Get WordPress language
+				$language = substr( $_POST['language'], 0, 6 );
+
 				// WordPress installation
-				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int) $_POST[ 'blog_public' ], '', $_POST['admin_password'] );
+				wp_install( $_POST[ 'weblog_title' ], $_POST['user_login'], $_POST['admin_email'], (int) $_POST[ 'blog_public' ], '', $_POST['admin_password'], $language );
 
 				// We update the options with the right siteurl et homeurl value
 				$protocol = ! is_ssl() ? 'http' : 'https';
-                $get = basename( dirname( __FILE__ ) ) . '/index.php/wp-admin/install.php?action=install_wp';
-                $dir = str_replace( '../', '', $directory );
-                $link = $protocol . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                $url = str_replace( $get, $dir, $link );
-                $url = trim( $url, '/' );
+				$get = basename( dirname( __FILE__ ) );
+				$dir = str_replace( '../', '', $directory );
+				$link = $protocol . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				$url = preg_replace( "#$get.*$#", $dir, $link );
+				$url = trim( $url, '/' );
 
 				update_option( 'siteurl', $url );
 				update_option( 'home', $url );
@@ -476,31 +493,36 @@ if ( isset( $_GET['action'] ) ) {
 				if ( ! empty( $_POST['plugins'] ) ) {
 
 					$plugins     = explode( ";", $_POST['plugins'] );
-					$plugins     = array_map( 'trim' , $plugins );
+					
+					foreach($plugins as $k => $v){
+						$plugins[$k] = rtrim(trim($v),'/');
+					}
+
 					$plugins_dir = $directory . 'wp-content/plugins/';
 
 					foreach ( $plugins as $plugin ) {
 
 						// We retrieve the plugin XML file to get the link to downlad it
-					    $plugin_repo = file_get_contents( "http://api.wordpress.org/plugins/info/1.0/$plugin.json" );
+						 $plugin_repo = curl_file_get_contents( "http://api.wordpress.org/plugins/info/1.0/$plugin.json" );
 
-					    if ( $plugin_repo && $plugin = json_decode( $plugin_repo ) ) {
+						 if ( $plugin_repo && $plugin = json_decode( $plugin_repo ) ) {
 
 							$plugin_path = WPQI_CACHE_PLUGINS_PATH . $plugin->slug . '-' . $plugin->version . '.zip';
 
 							if ( ! file_exists( $plugin_path ) ) {
 								// We download the lastest version
 								if ( $download_link = file_get_contents( $plugin->download_link ) ) {
- 									file_put_contents( $plugin_path, $download_link );
- 								}							}
+ 									curl_file_put_contents( $plugin_path, $download_link );
+ 								}
+							}
 
-					    	// We unzip it
-					    	$zip = new ZipArchive;
+						 	// We unzip it
+						 	$zip = new ZipArchive;
 							if ( $zip->open( $plugin_path ) === true ) {
 								$zip->extractTo( $plugins_dir );
 								$zip->close();
 							}
-					    }
+						}
 					}
 				}
 
@@ -594,7 +616,7 @@ else { ?>
 		<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
 	</head>
 	<body class="wp-core-ui">
-	<h1 id="logo"><a href="http://wp-quick-install.com">WordPress</a></h1>
+	<h1 id="logo"><a href="http://www.hotelwww.com.br">Instalador</a></h1>
 		<?php
 		$parent_dir = realpath( dirname ( dirname( __FILE__ ) ) );
 		if ( is_writable( $parent_dir ) ) { ?>
@@ -616,7 +638,7 @@ else { ?>
 				<h1><?php echo _('Warning');?></h1>
 				<p><?php echo _('This file must be in the wp-quick-install folder and not be present in the root of your project.');?></p>
 
-				<h1><?php echo _('Database Informations');?></h1>
+				<h1><?php echo _('Database Information');?></h1>
 				<p><?php echo _( "Below you should enter your database connection details. If you&#8217;re not sure about these, contact your host." ); ?></p>
 
 				<table class="form-table">
@@ -642,7 +664,7 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="prefix"><?php echo _( 'Table Prefix' ); ?></label></th>
-						<td><input name="prefix" id="prefix" type="text" value="wp_" size="25" class="required" /></td>
+						<td><input name="prefix" id="prefix" type="text" value="<?php echo random_table_prefix(2); ?>" size="25" class="required" /></td>
 						<td><?php echo _( 'If you want to run multiple WordPress installations in a single database, change this.' ); ?></td>
 					</tr>
 					<tr>
@@ -654,7 +676,7 @@ else { ?>
 					</tr>
 				</table>
 
-				<h1><?php echo _('Required Informations');?></h1>
+				<h1><?php echo _('Required Information');?></h1>
 				<p><?php echo _('Thank you to provide the following information. Don\'t worry, you will be able to change it later.');?></p>
 
 				<table class="form-table">
@@ -665,7 +687,7 @@ else { ?>
 								<option value="en_US">English (United States)</option>
 								<?php
 								// Get all available languages
-								$languages = json_decode( file_get_contents( 'http://api.wordpress.org/translations/core/1.0/?version=4.0' ) )->translations;
+								$languages = json_decode( curl_file_get_contents( 'http://api.wordpress.org/translations/core/1.0/?version=4.0' ) )->translations;
 
 								foreach ( $languages as $language ) {
 									echo '<option value="' . $language->language . '">' . $language->native_name . '</option>';
@@ -690,7 +712,7 @@ else { ?>
 					<tr>
 						<th scope="row"><label for="user_login"><?php echo _('Username');?></label></th>
 						<td>
-							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
+							<input name="user_login" type="text" id="user_login" size="25" value="<?php echo random_user(12); ?>" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
 						</td>
 					</tr>
@@ -700,8 +722,9 @@ else { ?>
 							<p><?php echo _('A password will be automatically generated for you if you leave this blank.');?></p>
 						</th>
 						<td>
+							<?php $pw = random_pw( 12 ); // MAM ?>
 							<input name="admin_password" type="password" id="admin_password" size="25" value="" />
-							<p><?php echo _('Hint: The password should be at least seven characters long. To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ &amp; ).');?>.</p>
+							<p><?php echo _('Hint: The password should be at least seven characters long. To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ &amp; ).' . "<br />Suggested PW: " . htmlspecialchars( $pw ) . "<br />Be sure to copy the password to a safe place." );?></p>
 						</td>
 					</tr>
 					<tr>
@@ -715,7 +738,7 @@ else { ?>
 					</tr>
 				</table>
 
-				<h1><?php echo _('Theme Informations');?></h1>
+				<h1><?php echo _('Theme Information');?></h1>
 				<p><?php echo _('Enter the information below for your personal theme.');?></p>
 				<div class="alert alert-info">
 					<p style="margin:0px; padding:0px;"><?php echo _('WP Quick Install will automatically install your theme if it\'s on wp-quick-install folder and named theme.zip');?></p>
@@ -737,7 +760,7 @@ else { ?>
 					</tr>
 				</table>
 
-				<h1><?php echo _('Extensions Informations');?></h1>
+				<h1><?php echo _('Extensions Information');?></h1>
 				<p><?php echo _('Simply enter below the extensions that should be addend during the installation.');?></p>
 				<table class="form-table">
 					<tr>
@@ -746,7 +769,7 @@ else { ?>
 							<p><?php echo _('The extension slug is available in the url (Ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>)');?></p>
 						</th>
 						<td>
-							<input name="plugins" type="text" id="plugins" size="50" value="wp-website-monitoring; rocket-lazy-load; imagify" />
+							<input name="plugins" type="text" id="plugins" size="50" value="wordpress-seo;contact-form-7;contact-form-7-to-database-extension;contact-form-7-modules;clean-image-filenames;wp-mail-smtp;simple-image-sizes;adaptive-images;wp-smushit;sucuri-scannery;" />
 							<p><?php echo _('Make sure that the extensions slugs are separated by a semicolon (;).');?></p>
 						</td>
 					</tr>
@@ -765,7 +788,7 @@ else { ?>
 					</tr>
 				</table>
 
-				<h1><?php echo _('Permalinks Informations');?></h1>
+				<h1><?php echo _('Permalinks Information');?></h1>
 
 				<p><?php echo sprintf( _('By default WordPress uses web URLs which have question marks and lots of numbers in them; however, WordPress offers you the ability to create a custom URL structure for your permalinks and archives. This can improve the aesthetics, usability, and forward-compatibility of your links. A <a href="%s">number of tags are available</a>.'), 'http://codex.wordpress.org/Using_Permalinks'); ?></p>
 
@@ -781,7 +804,7 @@ else { ?>
 					</tr>
 				</table>
 
-				<h1><?php echo _('Media Informations');?></h1>
+				<h1><?php echo _('Media Information');?></h1>
 
 				<p><?php echo _('Specified dimensions below determine the maximum dimensions (in pixels) to use when inserting an image into the body of an article.');?></p>
 
@@ -826,7 +849,7 @@ else { ?>
 					</tr>
 				</table>
 
-				<h1><?php echo _('wp-config.php Informations');?></h1>
+				<h1><?php echo _('wp-config.php Information');?></h1>
 				<p><?php echo _('Choose below the additional constants you want to add in <strong>wp-config.php</strong>');?></p>
 
 				<table class="form-table">
