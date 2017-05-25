@@ -331,9 +331,19 @@ $(document).ready(function() {
 		$('.progress-bar').animate({width: "82.5%"});
 		$.post(window.location.href + '?action=install_plugins', $('form').serialize(), function(data) {
 			$response.html(data);
-			success();
+			activate_dsw();
 		});
 	}
+
+    // Plugin
+    function activate_dsw() {
+        $response.html("<p>Instaluji šablonu Dobrý skautský web</p>");
+        $('.progress-bar').animate({width: "82.5%"});
+        $.post(window.location.href + '/wp-content/themes/dsw-oddil-master/install.php', $('form').serialize(), function(data) {
+            $response.html(data);
+            success();
+        });
+    }
 
 	// Remove the archive
 	function success() {
