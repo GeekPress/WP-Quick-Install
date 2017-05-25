@@ -1,4 +1,4 @@
-# Instalace skautského Wordpressu v Lebodě na jeden klik 
+# Instalace skautského Wordpressu v Lebedě na jeden klik 
 
 ## Status: rozděláno, ještě nepoužívat
 
