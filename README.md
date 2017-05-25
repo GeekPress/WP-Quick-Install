@@ -1,132 +1,56 @@
-WP Quick Install 1.4.2
-================
+# Instalace skautského Wordpressu v Lebodě na jeden klik 
 
-WP Quick Install is the easiest way to install WordPress.
+## Status: rozděláno, ještě nepoužívat
 
-A lightweight script which automatically downloads and install WordPress, plugins and themes you want.
+## Manuál na instalaci 
 
-Simply download the .zip archive et go to *wp-quick-install/index.php*
+Jak zpřístupnit na Lebedě autoinstalaci Wordpressu: 
 
-Changelog
-================
+* Jako základ používáme https://github.com/GeekPress/WP-Quick-Install (místní fork)
+* **Nastavení** je v souboru `data.ini` (včetně instalovaných pluginů a všeho dalšího)
+* Zrušili jsme GUI a JS z původního skriptu a všechno nasypali do `WordpressService.php`
+* Chtěné **DSW téma** se získá pomocí automatického stánutí z DWS githubu. Alternativně je možnost umístit soubor vedle skriptu a pojmenovat ho `theme.zip` 
+* Potřebné parametry pro instalaci jsou jako paramtery metody, return zatím nemáme žádný (vzhledem k tomu, že se skript bude provádět jindy (cronem) než ho uživatel zadává)
+* Potřebné **parametry** pro service: $dbName, $dbUserName, $dbPassword, $dbHost, $websiteTitle, $userLogin, $adminPassword
+* Pozor, skript běží dlouho (přeci jen stahuje, dekomprimuje a instaluje zaráz), takže je potřeba hlídat timeout chyb (na průměrném NB to běželo skoro minutu)
 
-1.4.2
------------
-* Delete Tweentyfifteen & Tweentysixteen themes
+## TODO shortterm
 
-1.4.1
------------
-* Fix quote issue with WordPress.com API Key
+#### automaticky přidat obrázky z theme
 
-1.4
------------
-* Fix database issue since WordPress 4.1
-* You can add your WordPress.com API Key
-
-1.3.3
------------
-
-* Add SSL compatibility
-* Remove SSL function (cause trouble with process installation)
-
-1.3.2
------------
-
-* Add a script header
-* Security improvement
-
-1.3.1
------------
-
-* Fix error for PHP > 5.5: Strict standards: Only variables should be passed by reference in ../wp-quick-install/index.php on line 10
-
-1.3
------------
-
-* Possiblity to select WordPress language installation
-* Permaling management
+spočívá v poslání issue do DSW, aby byly obrázky includované dynamicky (teď si neporadí s subfolder v adresářové cestě) - https://github.com/skaut/dsw-oddil/issues/129
 
 
-1.2.8.1
------------
+#### v nových odkazech používat absolutní
 
-* You can now declare articles to be generated via data.ini file
-* Fix bug on new articles
-* You can now select the revision by articles
-
-1.2.8
------------
-
-* Media management
-
-1.2.7.2
------------
-
-* Security : Forbiden access to data.ini from the browser
-
-1.2.7.1
------------
-
-* noindex nofollow tag.
-
-1.2.7
------------
-
-* Premium extension by adding archives in plugins folder
-* You can enable extension after installation
-* Auto supression of Hello Dolly extension
-* You can add a theme and enable it
-* You can delete Twenty Elever and Twenty Ten
-
-1.2.6
------------
-
-* Fix a JS bug with data.ini
-
-1.2.5
------------
-
-* You can delete the default content added by WordPress
-* You can add new pages with data.ini
-* Data.ini update
-
-1.2.4
------------
-
-* Two new debug options : *Display errors* (WP_DEBUG_DISPLAY) and *Write errors in a log file* (WP_DEBUG_LOG)
-
-1.2.3
------------
-
-* SEO Fix bug
-* Automatic deletion of licence.txt and readme.html
-
-1.2.2
------------
-
-* Deletion of all exec() fucntions
-* Unzip WordPress and plugins with ZipArchive class
-* Using scandir() and rename() to move WordPress files
-
-1.2.1
------------
-
-* Checking chmod on parent folder
-* Adding a link to website and admin if success
-
-1.2
------------
-
-* You can now pre-configure the form with data.ini
+#### automaticky přidat menu z theme
 
 
-1.1
------------
+## TODO longterm
 
-* Code Optimisation
+#### Přidat automaticky češtinu
 
+Postup pro execute: 
 
-1.0
------------
+* je potřeba vytvořit ve složce `wp-content` složku `languages`
+* do ní nakopírovat obsah s language soubory
+* ve wp-config přepsat řádek na `define ('WPLANG', 'cs_CZ');`
 
-* Initial Commit
+Návod k tomuto postupu je na adrese http://www.cwordpress.cz/navody/instalace-cestiny-do-wordpressu.html
+
+#### Plugin pro bazar
+
+na vyžádání includenout plugin pro bazar (https://wordpress.org/plugins/skaut-bazar/)
+
+#### Return užitečné info
+
+Vracet bychom mohli např. heslo pro admina nebo nějaký success message, to bude věcí další domluvy
+
+#### Umožnit instalaci i přes existující web
+
+Inspired by literat v issue:  
+
+* na začátku se automatika pouze zeptá na login a heslo pro administrátorský účet
+* musí proběhnout kontrola FTP a databáze, tj. pokud je zde nějaký obsah, bude smazán a uživatel na to musí být upozorněn a potvrdit to
+* veškerý obsah před instalací bude z FTP i DB smazán
+* jako základní šablona společně s Wordpressem bude instalována DSW Oddíl
