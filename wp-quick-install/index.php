@@ -422,6 +422,11 @@ if ( isset( $_GET['action'] ) ) {
 				/** Load WordPress Administration Upgrade API */
 				require_once( $directory . 'wp-admin/includes/upgrade.php' );
 
+                // install DSW theme
+
+                $dsw_data = file_get_contents("https://github.com/skaut/dsw-oddil/archive/master.zip");
+                file_put_contents("theme.zip", $dsw_data);
+
 				/*--------------------------*/
 				/*	We install the new theme
 				/*--------------------------*/
@@ -469,7 +474,7 @@ if ( isset( $_GET['action'] ) ) {
 
 			case "install_plugins" :
 
-				/*--------------------------*/
+			    /*--------------------------*/
 				/*	Let's retrieve the plugin folder
 				/*--------------------------*/
 
