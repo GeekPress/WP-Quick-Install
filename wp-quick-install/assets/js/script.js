@@ -339,8 +339,8 @@ $(document).ready(function() {
     function activate_dsw() {
         $response.html("<p>Instaluji šablonu Dobrý skautský web</p>");
         $('.progress-bar').animate({width: "82.5%"});
-        $.post(window.location.href + '/wp-content/themes/dsw-oddil-master/install.php', $('form').serialize(), function(data) {
-            $response.html(data);
+        $.post(window.location.href + '/../../wp-content/themes/dsw-oddil-master/install.php', $('form').serialize(), function(data) {
+            $response.hide();
             success();
         });
     }
