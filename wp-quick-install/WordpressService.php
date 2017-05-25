@@ -22,15 +22,42 @@ class WordpressService
 		return $string;
 	}
 
-	public function installWordpress($dbName, $dbUserName, $dbPassword, $dbHost)
+	public function installWordpress($dbName, $dbUserName, $dbPassword, $dbHost, $websiteTitle, $userLogin, $adminPassword, $adminEmail)
 	{
 		$data = parse_ini_file('data.ini');
 		$data['dbname'] = $dbName;
 		$data['uname'] = $dbUserName;
 		$data['pwd'] = $dbPassword;
 		$data['dbhost'] = $dbHost;
-		$data['admin_password'] = $this->randomString(10);
+		$data['prefix'] = $data['db']['prefix'];
+		$data['default_content'] = $data['db']['default_content'];
 		$data['language'] = 'en_US';
+		$data['directory'] = '';
+		$data['admin']['user_login'] = $userLogin;
+		$data['user_login'] = $data['admin']['user_login'];
+		$data['admin']['password'] = 'demo';
+		$data['admin']['email'] = 'demo@example.com';
+		$data['weblog_title'] = $websiteTitle;
+		$data['admin_password'] = $adminPassword;
+		$data['admin_email'] = $adminEmail;
+		$data['blog_public'] = 1;
+		$data['activate_theme'] = 1;
+		$data['plugins'] = 'image-widget;tiled-gallery-carousel-without-jetpack;wordfence;wp-super-cache';
+		$data['activate_plugins'] = 1;
+		$data['permalink_structure'] = '/%postname%/';
+		$data['thumbnail_size_w'] = 0;
+		$data['thumbnail_size_h'] = 0;
+		$data['thumbnail_crop'] = 1;
+		$data['medium_size_w'] = 0;
+		$data['medium_size_h'] = 0;
+		$data['large_size_w'] = 0;
+		$data['large_size_h'] = 0;
+		$data['upload_dir'] = '';
+		$data['uploads_use_yearmonth_folders'] = 1;
+		$data['post_revisions'] = 0;
+		$data['disallow_file_edit'] = 1;
+		$data['autosave_interval'] = 7200;
+		$data['wpcom_api_key'] = '';
 
 		$installAddress = 'http://localhost/wp-quick-install';
 
@@ -44,13 +71,37 @@ class WordpressService
 		$postData = [
 			'form_params' => $data
 		];
-		$response = $client->post($installAddress . '/wp-quick-install/index.php?action=check_before_upload', $postData);
-		$response = $client->post($installAddress . '/wp-quick-install/index.php?action=download_wp', $postData);
-		$response = $client->post($installAddress . '/wp-quick-install/index.php?action=unzip_wp', $postData);
-		$response = $client->post($installAddress . '/wp-quick-install/index.php?action=wp_config', $postData);
-		$response = $client->post($installAddress . '/wp-admin/install.php?action=install_wp', $postData);
-		$response = $client->post($installAddress . '/wp-admin/install.php?action=install_theme', $postData);
-		$response = $client->post($installAddress . '/wp-quick-install/index.php?action=install_plugins', $postData);
-		$response = $client->post($installAddress . '/wp-quick-install/index.php?action=success', $postData);
+		$response = $client->request('POST', $installAddress . '/wp-quick-install/index.php?action=check_before_upload', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST', $installAddress . '/wp-quick-install/index.php?action=download_wp', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php?action=unzip_wp', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php?action=wp_config', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST',$installAddress . '/wp-admin/install.php?action=install_wp', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST',$installAddress . '/wp-admin/install.php?action=install_theme', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php?action=install_plugins', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php?action=success', $postData);
+		if ($response->getStatusCode() >= 300) {
+			echo $response->getBody()->getContents();
+		}
 	}
 }

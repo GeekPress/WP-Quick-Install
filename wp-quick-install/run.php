@@ -11,7 +11,7 @@ require_once 'WordpressService.php';
 $time_pre = microtime(true);
 
 $service = new WordpressService();
-$service->installWordpress('wordpress', 'root', '', 'localhost');
+$service->installWordpress('wordpress', 'root', '', 'localhost', 'my wordpress', 'admin', 'admin', 'admin@admin.cz');
 
 $time_post = microtime(true);
 
