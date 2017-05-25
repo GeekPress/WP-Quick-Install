@@ -16,7 +16,16 @@ define( 'WPQI_CACHE_PATH'			, 'cache/' );
 define( 'WPQI_CACHE_CORE_PATH'		, WPQI_CACHE_PATH . 'core/' );
 define( 'WPQI_CACHE_PLUGINS_PATH'	, WPQI_CACHE_PATH . 'plugins/' );
 
-require( 'inc/functions.php' );
+
+if ( ! function_exists( '_' ) ) {
+	function _( $str ) {
+		echo $str;
+	}
+}
+
+function sanit( $str ) {
+	return addcslashes( str_replace( array( ';', "\n" ), '', $str ), '\\' );
+}
 
 // Force URL with index.php
 if ( empty( $_GET ) && end( ( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) ) ) == 'wp-quick-install' ) {
@@ -627,12 +636,12 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="uname"><?php echo _( 'Database username' );?></label></th>
-						<td><input name="uname" id="uname" type="text" size="25" value="username" class="required" /></td>
+						<td><input name="uname" id="uname" type="text" size="25" value="root" class="required" /></td>
 						<td><?php echo _( 'Your MySQL username' ); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="pwd"><?php echo _('Password');?></label></th>
-						<td><input name="pwd" id="pwd" type="text" size="25" value="password" /></td>
+						<td><input name="pwd" id="pwd" type="text" size="25" value="" /></td>
 						<td><?php echo _('&hellip;and your MySQL password.');?></td>
 					</tr>
 					<tr>
