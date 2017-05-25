@@ -16,6 +16,10 @@ Jak zpřístupnit na Lebedě autoinstalaci Wordpressu:
 
 ## TODO shortterm
 
+#### stahovat češtinu napřímo
+
+https://cs.wordpress.org/
+
 #### automaticky přidat obrázky z theme
 
 spočívá v poslání issue do DSW, aby byly obrázky includované dynamicky (teď si neporadí s subfolder v adresářové cestě) - https://github.com/skaut/dsw-oddil/issues/129
