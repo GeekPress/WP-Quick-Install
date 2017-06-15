@@ -1,12 +1,12 @@
 # Instalace skautského Wordpressu v Lebedě na jeden klik 
 
-## Status: rozděláno, ještě nepoužívat
+## Status: rozděláno, ještě nepoužívat!
 
 ## Manuál na instalaci 
 
 Jak zpřístupnit na Lebedě autoinstalaci Wordpressu: 
 
-* Jako základ používáme https://github.com/GeekPress/WP-Quick-Install (místní fork)
+* Jako základ používáme https://github.com/GeekPress/WP-Quick-Install (fork)
 * **Nastavení** je v souboru `data.ini` (včetně instalovaných pluginů a všeho dalšího)
 * Zrušili jsme GUI a JS z původního skriptu a všechno nasypali do `WordpressService.php`
 * Chtěné **DSW téma** se získá pomocí automatického stánutí z DWS githubu. Alternativně je možnost umístit soubor vedle skriptu a pojmenovat ho `theme.zip` 
@@ -18,31 +18,20 @@ Jak zpřístupnit na Lebedě autoinstalaci Wordpressu:
 
 #### stahovat češtinu napřímo
 
-https://cs.wordpress.org/
+https://cs.wordpress.org/ - Kalich zkusí zprovoznit něco jako odkaz cs.wordpress.org/latest.zip (zatím není)
 
 #### automaticky přidat obrázky z theme
 
 spočívá v poslání issue do DSW, aby byly obrázky includované dynamicky (teď si neporadí s subfolder v adresářové cestě) - https://github.com/skaut/dsw-oddil/issues/129
 
-
-#### v nových odkazech používat absolutní
-
 #### automaticky přidat menu z theme
+
+řešíme s Kalichem
 
 
 ## TODO longterm
 
-#### Přidat automaticky češtinu
-
-Postup pro execute: 
-
-* je potřeba vytvořit ve složce `wp-content` složku `languages`
-* do ní nakopírovat obsah s language soubory
-* ve wp-config přepsat řádek na `define ('WPLANG', 'cs_CZ');`
-
-Návod k tomuto postupu je na adrese http://www.cwordpress.cz/navody/instalace-cestiny-do-wordpressu.html
-
-#### Plugin pro bazar
+#### Volitelný plugin pro bazar
 
 na vyžádání includenout plugin pro bazar (https://wordpress.org/plugins/skaut-bazar/)
 
@@ -51,6 +40,8 @@ na vyžádání includenout plugin pro bazar (https://wordpress.org/plugins/skau
 Vracet bychom mohli např. heslo pro admina nebo nějaký success message, to bude věcí další domluvy
 
 #### Umožnit instalaci i přes existující web
+
+@kalich5 - nevhodné dělat automaticky, protože se tím naseká moc problémů - lepší kontrolovat, zda je složka prázdná a pokud ne, rovnou to nepovolit (jak to dělá např. `git clone` nebo velcí hostingové)
 
 Inspired by literat v issue:  
 
