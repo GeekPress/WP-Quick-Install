@@ -19,7 +19,8 @@ define( 'WPQI_CACHE_PLUGINS_PATH'	, WPQI_CACHE_PATH . 'plugins/' );
 require( 'inc/functions.php' );
 
 // Force URL with index.php
-if ( empty( $_GET ) && end( ( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) ) ) == 'wp-quick-install' ) {
+$requestURI = explode( '/' , trim($_SERVER['REQUEST_URI'], '/') );
+if ( empty( $_GET ) && end( ( $requestURI ) ) == 'wp-quick-install' ) {
 	header( 'Location: index.php' );
 	die();
 }
