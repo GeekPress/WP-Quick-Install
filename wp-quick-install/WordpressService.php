@@ -87,54 +87,21 @@ class WordpressService
 		if ($response->getStatusCode() >= 300) {
 			echo $response->getBody()->getContents();
 		}
-		$response = $client->request('POST',$installAddress . '/wp-admin/install.php?action=install_wp', $postData);
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php/wp-admin/install.php?action=install_wp', $postData);
 		if ($response->getStatusCode() >= 300) {
 			echo $response->getBody()->getContents();
 		}
-		$response = $client->request('POST',$installAddress . '/wp-admin/install.php?action=install_theme', $postData);
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php/wp-admin/install.php?action=install_theme', $postData);
 		if ($response->getStatusCode() >= 300) {
 			echo $response->getBody()->getContents();
 		}
-		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php?action=install_plugins', $postData);
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php/wp-quick-install/index.php?action=install_plugins', $postData);
 		if ($response->getStatusCode() >= 300) {
 			echo $response->getBody()->getContents();
 		}
-		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php?action=success', $postData);
+		$response = $client->request('POST',$installAddress . '/wp-quick-install/index.php/wp-quick-install/index.php?action=success', $postData);
 		if ($response->getStatusCode() >= 300) {
 			echo $response->getBody()->getContents();
 		}
 	}
 }
-
-/*
-dbname:wordpress
-uname:root
-pwd:
-dbhost:localhost
-prefix:wp_
-default_content:1
-language:en_US
-directory:
-weblog_title:my wordpress
-user_login:admin
-admin_password:admin
-admin_email:admin@admin.cz
-blog_public:1
-activate_theme:1
-plugins:tiled-gallery-carousel-without-jetpack;wordfence;wp-super-cache;google-calendar-events;easy-facebook-feed
-activate_plugins:1
-permalink_structure:/%postname%/
-thumbnail_size_w:0
-thumbnail_size_h:0
-thumbnail_crop:1
-medium_size_w:0
-medium_size_h:0
-large_size_w:0
-large_size_h:0
-upload_dir:
-uploads_use_yearmonth_folders:1
-post_revisions:0
-disallow_file_edit:1
-autosave_interval:7200
-wpcom_api_key:
-*/
