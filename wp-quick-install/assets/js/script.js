@@ -1,10 +1,12 @@
+var $debug, $debug_options, $debug_display, $debug_log, $response;
+
 $(document).ready(function() {
 
 	// Debug mode
-	var $debug		   = $('#debug'),
-		$debug_options = $('#debug_options'),
-		$debug_display = $debug_options.find('#debug_display');
-		$debug_log 	   = $debug_options.find('#debug_log');
+	$debug		   = $('#debug');
+    $debug_options = $('#debug_options');
+    $debug_display = $debug_options.find('#debug_display');
+    $debug_log 	   = $debug_options.find('#debug_log');
 
 	$debug.change(function() {
 		if ( $debug.is(':checked') ) {
@@ -221,7 +223,7 @@ $(document).ready(function() {
 
 	}
 
-	var $response  = $('#response');
+	$response  = $('#response');
 
 	$('#submit').click( function() {
 
@@ -289,72 +291,79 @@ $(document).ready(function() {
 		return false;
 	});
 
-	// Let's unzip WordPress
-	function unzip_wp() {
-		$response.html("<p>Decompressing Files...</p>" );
-		$('.progress-bar').animate({width: "16.5%"});
-		$.post(window.location.href + '?action=unzip_wp', $('form').serialize(), function(data) {
-			wp_config();
-		});
-	}
-
-	// Let's create the wp-config.php file
-	function wp_config() {
-		$response.html("<p>File Creation for wp-config...</p>");
-		$('.progress-bar').animate({width: "33%"});
-		$.post(window.location.href + '?action=wp_config', $('form').serialize(), function(data) {
-			install_wp();
-		});
-	}
-
-	// CDatabase
-	function install_wp() {
-		$response.html("<p>Database Installation in Progress...</p>");
-		$('.progress-bar').animate({width: "49.5%"});
-		$.post(window.location.href + '/wp-admin/install.php?action=install_wp', $('form').serialize(), function(data) {
-			install_theme();
-		});
-	}
-
-	// Theme
-	function install_theme() {
-		$response.html("<p>Theme Installation in Progress...</p>");
-		$('.progress-bar').animate({width: "66%"});
-		$.post(window.location.href + '/wp-admin/install.php?action=install_theme', $('form').serialize(), function(data) {
-			install_plugins();
-		});
-	}
-
-	// Plugin
-	function install_plugins() {
-		$response.html("<p>Plugins Installation in Progress...</p>");
-		$('.progress-bar').animate({width: "82.5%"});
-		$.post(window.location.href + '?action=install_plugins', $('form').serialize(), function(data) {
-			$response.html(data);
-			activate_dsw();
-		});
-	}
-
-    // Plugin
-    function activate_dsw() {
-        $response.html("<p>Instaluji šablonu Dobrý skautský web</p>");
-        $('.progress-bar').animate({width: "82.5%"});
-        $.post(window.location.href + '/../../wp-content/themes/dsw-oddil-master/install.php', $('form').serialize(), function(data) {
-            $response.hide();
-            success();
-        });
-    }
-
-	// Remove the archive
-	function success() {
-		$response.html("<p>Successful installation completed</p>");
-		$('.progress-bar').animate({width: "100%"});
-		$response.hide();
-		$('.progress').delay(500).hide();
-		$.post(window.location.href + '?action=success',$('form').serialize(), function(data) {
-			$('#success').show().append(data);
-		});
-		$.get( 'http://wp-quick-install.com/inc/incr-counter.php' );
-	}
 
 });
+
+// Let's unzip WordPress
+function unzip_wp() {
+    $response.html("<p>Decompressing Files...</p>" );
+    $('.progress-bar').animate({width: "16.5%"});
+    $.post(window.location.href + '?action=unzip_wp', $('form').serialize(), function(data) {
+        console.log('unzip_wp done');
+        wp_config();
+    });
+}
+
+// Let's create the wp-config.php file
+function wp_config() {
+    $response.html("<p>File Creation for wp-config...</p>");
+    $('.progress-bar').animate({width: "33%"});
+    $.post(window.location.href + '?action=wp_config', $('form').serialize(), function(data) {
+        console.log('wp_config done');
+        // install_wp();
+    });
+}
+
+// CDatabase
+function install_wp() {
+    $response.html("<p>Database Installation in Progress...</p>");
+    $('.progress-bar').animate({width: "49.5%"});
+    $.post(window.location.href + '/wp-admin/install.php?action=install_wp', $('form').serialize(), function(data) {
+        console.log('install_wp done');
+        install_theme();
+    });
+}
+
+// Theme
+function install_theme() {
+    $response.html("<p>Theme Installation in Progress...</p>");
+    $('.progress-bar').animate({width: "66%"});
+    $.post(window.location.href + '/wp-admin/install.php?action=install_theme', $('form').serialize(), function(data) {
+        console.log('install_theme done');
+        install_plugins();
+    });
+}
+
+// Plugin
+function install_plugins() {
+    $response.html("<p>Plugins Installation in Progress...</p>");
+    $('.progress-bar').animate({width: "82.5%"});
+    $.post(window.location.href + '?action=install_plugins', $('form').serialize(), function(data) {
+        $response.html(data);
+        console.log('install_plugins done');
+        activate_dsw();
+    });
+}
+
+// Plugin
+function activate_dsw() {
+    $response.html("<p>Instaluji šablonu Dobrý skautský web</p>");
+    $('.progress-bar').animate({width: "82.5%"});
+    $.post(window.location.href + '/../../wp-content/themes/dsw-oddil-master/install.php', $('form').serialize(), function(data) {
+        $response.hide();
+        console.log('activate_dsw done');
+        success();
+    });
+}
+
+// Remove the archive
+function success() {
+    $response.html("<p>Successful installation completed</p>");
+    $('.progress-bar').animate({width: "100%"});
+    $response.hide();
+    $('.progress').delay(500).hide();
+    $.post(window.location.href + '?action=success',$('form').serialize(), function(data) {
+        $('#success').show().append(data);
+    });
+    $.get( 'http://wp-quick-install.com/inc/incr-counter.php' );
+}

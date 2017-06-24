@@ -699,12 +699,12 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="weblog_title"><?php echo _('Site Title');?></label></th>
-						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="" class="required" /></td>
+						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="my wordpress" class="required" /></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="user_login"><?php echo _('Username');?></label></th>
 						<td>
-							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
+							<input name="user_login" type="text" id="user_login" size="25" value="admin" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
 						</td>
 					</tr>
@@ -714,13 +714,13 @@ else { ?>
 							<p><?php echo _('A password will be automatically generated for you if you leave this blank.');?></p>
 						</th>
 						<td>
-							<input name="admin_password" type="password" id="admin_password" size="25" value="" />
+							<input name="admin_password" type="password" id="admin_password" size="25" value="admin" />
 							<p><?php echo _('Hint: The password should be at least seven characters long. To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ &amp; ).');?>.</p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="admin_email"><?php echo _('Your E-mail');?></label></th>
-						<td><input name="admin_email" type="text" id="admin_email" size="25" value="" class="required" />
+						<td><input name="admin_email" type="text" id="admin_email" size="25" value="admin@admin.cz" class="required" />
 						<p><?php echo _('Double-check your email address before continuing.');?></p></td>
 					</tr>
 					<tr>
