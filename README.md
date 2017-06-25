@@ -1,6 +1,6 @@
-# Instalace skautského Wordpressu v Lebedě na jeden klik 
+# Instalace skautské Wordpress šablony DSW v Lebedě na jeden klik 
 
-## Status: rozděláno, ještě nepoužívat!
+## Status: v1.0
 
 ## Manuál na instalaci 
 
