@@ -9,16 +9,17 @@ Jak zpřístupnit na Lebedě autoinstalaci Wordpressu:
 * Jako základ používáme https://github.com/GeekPress/WP-Quick-Install (fork)
 * **Nastavení** je v souboru `data.ini` (včetně instalovaných pluginů a všeho dalšího)
 * Zrušili jsme GUI a JS z původního skriptu a všechno nasypali do `WordpressService.php`
+* **Requirement** je v composer.json, stačí spustit `composer update`
 * Chtěné **DSW téma** se získá pomocí automatického stánutí z DWS githubu. Alternativně je možnost umístit soubor vedle skriptu a pojmenovat ho `theme.zip` 
 * Potřebné parametry pro instalaci jsou jako paramtery metody, return zatím nemáme žádný (vzhledem k tomu, že se skript bude provádět jindy (cronem) než ho uživatel zadává)
-* Potřebné **parametry** pro service: $dbName, $dbUserName, $dbPassword, $dbHost, $websiteTitle, $userLogin, $adminPassword
+* Potřebné **parametry** pro service: $dbName, $dbUserName, $dbPassword, $dbHost, $websiteTitle, $userLogin, $adminPassword, $adminEmail
 * Pozor, skript běží dlouho (přeci jen stahuje, dekomprimuje a instaluje zaráz), takže je potřeba hlídat timeout chyb (na průměrném NB to běželo skoro minutu)
 
 ## TODO shortterm
 
 #### stahovat češtinu napřímo
 
-https://cs.wordpress.org/ - Kalich zkusí zprovoznit něco jako odkaz cs.wordpress.org/latest.zip (zatím není)
+https://cs.wordpress.org/ - Kalich zkusí zprovoznit něco jako odkaz cs.wordpress.org/latest.zip (zatím není) a potom můžeme pokračovat
 
 #### automaticky přidat obrázky z theme
 
@@ -34,10 +35,6 @@ spočívá v poslání issue do DSW, aby byly obrázky includované dynamicky (t
 #### Volitelný plugin pro bazar
 
 na vyžádání includenout plugin pro bazar (https://wordpress.org/plugins/skaut-bazar/)
-
-#### Return užitečné info
-
-Vracet bychom mohli např. heslo pro admina nebo nějaký success message, to bude věcí další domluvy
 
 #### Umožnit instalaci i přes existující web
 
