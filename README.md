@@ -15,11 +15,10 @@ Jak zpřístupnit na Lebedě autoinstalaci Wordpressu:
 * Potřebné **parametry** pro service: $dbName, $dbUserName, $dbPassword, $dbHost, $websiteTitle, $userLogin, $adminPassword, $adminEmail
 * Pozor, skript běží dlouho (přeci jen stahuje, dekomprimuje a instaluje zaráz), takže je potřeba hlídat timeout chyb (na průměrném NB to běželo skoro minutu)
 
+#### stahování češtiny napřímo
+https://cs.wordpress.org/latest-cs_CZ.zip
+
 ## TODO shortterm
-
-#### stahovat češtinu napřímo
-
-https://cs.wordpress.org/ - Kalich zkusí zprovoznit něco jako odkaz cs.wordpress.org/latest.zip (zatím není) a potom můžeme pokračovat
 
 #### automaticky přidat obrázky z theme
 
