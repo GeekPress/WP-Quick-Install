@@ -29,7 +29,7 @@ class WordpressService
 		$data['uname'] = $dbUserName;
 		$data['pwd'] = $dbPassword;
 		$data['dbhost'] = $dbHost;
-		$data['prefix'] = $data['db']['prefix'];
+		$data['prefix'] = $data['db']['prefix'] . $this->randomString(6) . '_';
 		$data['default_content'] = $data['db']['default_content'];
 		$data['language'] = 'en_US';
 		$data['directory'] = '';
