@@ -9,7 +9,7 @@ Jak zpřístupnit na Lebedě autoinstalaci Wordpressu:
 * Jako základ používáme https://github.com/GeekPress/WP-Quick-Install (fork)
 * **Nastavení** je v souboru `data.ini` (včetně instalovaných pluginů a všeho dalšího)
 * Zrušili jsme GUI a JS z původního skriptu a všechno nasypali do `WordpressService.php`
-* **Requirement** je v composer.json, stačí spustit `composer update`
+* **Requirement** je v composer.json, stačí spustit `composer install`
 * Chtěné **DSW téma** se získá pomocí automatického stánutí z DWS githubu. Alternativně je možnost umístit soubor vedle skriptu a pojmenovat ho `theme.zip` 
 * Potřebné parametry pro instalaci jsou jako paramtery metody, return zatím nemáme žádný (vzhledem k tomu, že se skript bude provádět jindy (cronem) než ho uživatel zadává)
 * Potřebné **parametry** pro service: $dbName, $dbUserName, $dbPassword, $dbHost, $websiteTitle, $userLogin, $adminPassword, $adminEmail
