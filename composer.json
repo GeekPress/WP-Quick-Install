@@ -1,0 +1,12 @@
+{
+    "name": "skaut/wp-instalator-lebeda",
+    "type": "library",
+    "description": "Word press instalation package",
+    "keywords": ["skaut"],
+    "homepage": "https://github.com/skaut/WordPress-Lebeda-instalator",
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "minimum-stability": "stable"
+}

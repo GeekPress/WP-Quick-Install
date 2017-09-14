@@ -16,7 +16,16 @@ define( 'WPQI_CACHE_PATH'			, 'cache/' );
 define( 'WPQI_CACHE_CORE_PATH'		, WPQI_CACHE_PATH . 'core/' );
 define( 'WPQI_CACHE_PLUGINS_PATH'	, WPQI_CACHE_PATH . 'plugins/' );
 
-require( 'inc/functions.php' );
+
+if ( ! function_exists( '_' ) ) {
+	function _( $str ) {
+		echo $str;
+	}
+}
+
+function sanit( $str ) {
+	return addcslashes( str_replace( array( ';', "\n" ), '', $str ), '\\' );
+}
 
 // Force URL with index.php
 if ( empty( $_GET ) && end( ( explode( '/' , trim($_SERVER['REQUEST_URI'], '/') ) ) ) == 'wp-quick-install' ) {
@@ -422,6 +431,11 @@ if ( isset( $_GET['action'] ) ) {
 				/** Load WordPress Administration Upgrade API */
 				require_once( $directory . 'wp-admin/includes/upgrade.php' );
 
+                // install DSW theme
+
+                $dsw_data = file_get_contents("https://github.com/skaut/dsw-oddil/archive/master.zip");
+                file_put_contents("theme.zip", $dsw_data);
+
 				/*--------------------------*/
 				/*	We install the new theme
 				/*--------------------------*/
@@ -469,7 +483,7 @@ if ( isset( $_GET['action'] ) ) {
 
 			case "install_plugins" :
 
-				/*--------------------------*/
+			    /*--------------------------*/
 				/*	Let's retrieve the plugin folder
 				/*--------------------------*/
 
@@ -627,12 +641,12 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="uname"><?php echo _( 'Database username' );?></label></th>
-						<td><input name="uname" id="uname" type="text" size="25" value="username" class="required" /></td>
+						<td><input name="uname" id="uname" type="text" size="25" value="root" class="required" /></td>
 						<td><?php echo _( 'Your MySQL username' ); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="pwd"><?php echo _('Password');?></label></th>
-						<td><input name="pwd" id="pwd" type="text" size="25" value="password" /></td>
+						<td><input name="pwd" id="pwd" type="text" size="25" value="" /></td>
 						<td><?php echo _('&hellip;and your MySQL password.');?></td>
 					</tr>
 					<tr>
@@ -685,12 +699,12 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="weblog_title"><?php echo _('Site Title');?></label></th>
-						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="" class="required" /></td>
+						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="my wordpress" class="required" /></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="user_login"><?php echo _('Username');?></label></th>
 						<td>
-							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
+							<input name="user_login" type="text" id="user_login" size="25" value="admin" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
 						</td>
 					</tr>
@@ -700,13 +714,13 @@ else { ?>
 							<p><?php echo _('A password will be automatically generated for you if you leave this blank.');?></p>
 						</th>
 						<td>
-							<input name="admin_password" type="password" id="admin_password" size="25" value="" />
+							<input name="admin_password" type="password" id="admin_password" size="25" value="admin" />
 							<p><?php echo _('Hint: The password should be at least seven characters long. To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ &amp; ).');?>.</p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="admin_email"><?php echo _('Your E-mail');?></label></th>
-						<td><input name="admin_email" type="text" id="admin_email" size="25" value="" class="required" />
+						<td><input name="admin_email" type="text" id="admin_email" size="25" value="admin@admin.cz" class="required" />
 						<p><?php echo _('Double-check your email address before continuing.');?></p></td>
 					</tr>
 					<tr>
