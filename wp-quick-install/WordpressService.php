@@ -35,8 +35,8 @@ class WordpressService
 		$data['directory'] = '';
 		$data['admin']['user_login'] = $userLogin;
 		$data['user_login'] = $data['admin']['user_login'];
-		$data['admin']['password'] = 'demo';
-		$data['admin']['email'] = 'demo@example.com';
+		$data['admin']['password'] = $adminPassword;
+		$data['admin']['email'] = $adminEmail;
 		$data['weblog_title'] = $websiteTitle;
 		$data['admin_password'] = $adminPassword;
 		$data['admin_email'] = $adminEmail;
