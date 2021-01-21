@@ -2,11 +2,11 @@
 /*
 Script Name: WP Quick Install
 Author: Jonathan Buttigieg
-Contributors: Julio Potier
+Contributors: Renaud Fradin, Anatole Allain
 Script URI: http://wp-quick-install.com
 Version: 1.4.1
 Licence: GPLv3
-Last Update: 08 jan 15
+Last Update: 21 jan 2021
 */
 
 @set_time_limit( 0 );
@@ -161,12 +161,12 @@ if ( isset( $_GET['action'] ) ) {
 				$key = 0;
 				foreach ( $config_file as &$line ) {
 
-					if ( '$table_prefix  =' == substr( $line, 0, 16 ) ) {
+					if ( '$table_prefix =' == substr( $line, 0, 16 ) ) {
 						$line = '$table_prefix  = \'' . sanit( $_POST[ 'prefix' ] ) . "';\r\n";
 						continue;
 					}
 
-					if ( ! preg_match( '/^define\(\'([A-Z_]+)\',([ ]+)/', $line, $match ) ) {
+					if ( ! preg_match( '/^define\( \'([A-Z_]+)\',([ ]+)/', $line, $match ) ) {
 						continue;
 					}
 
@@ -177,7 +177,7 @@ if ( isset( $_GET['action'] ) ) {
 
 							// Debug mod
 							if ( (int) $_POST['debug'] == 1 ) {
-								$line = "define('WP_DEBUG', 'true');\r\n";
+								$line = "define( 'WP_DEBUG', 'true');\r\n";
 
 								// Display error
 								if ( (int) $_POST['debug_display'] == 1 ) {
@@ -450,6 +450,9 @@ if ( isset( $_GET['action'] ) ) {
 
 						// Let's remove the Tweenty family
 						if ( $_POST['delete_default_themes'] == 1 ) {
+							delete_theme( 'twentytwentyone' );
+							delete_theme( 'twentytwenty' );
+							delete_theme( 'twentynineteen' );
 							delete_theme( 'twentysixteen' );
 							delete_theme( 'twentyfifteen' );
 							delete_theme( 'twentyfourteen' );
@@ -505,7 +508,7 @@ if ( isset( $_GET['action'] ) ) {
 				}
 
 				if ( $_POST['plugins_premium'] == 1 ) {
-
+					$plugins_dir = $directory . 'wp-content/plugins/';
 					// We scan the folder
 					$plugins = scandir( 'plugins' );
 
@@ -573,7 +576,7 @@ if ( isset( $_GET['action'] ) ) {
 				echo '<div id="errors" class="alert alert-danger"><p style="margin:0;"><strong>' . _('Warning') . '</strong>: Don\'t forget to delete WP Quick Install folder.</p></div>';
 
 				// Link to the admin
-				echo '<a href="' . admin_url() . '" class="button" style="margin-right:5px;" target="_blank">'. _('Log In') . '</a>';
+				echo '<a href="' . admin_url() .'"  class="button" style="margin-right:5px;" target="_blank">'. _('Log In') . '</a>';
 				echo '<a href="' . home_url() . '" class="button" target="_blank">' . _('Go to website') . '</a>';
 
 				break;
@@ -746,7 +749,7 @@ else { ?>
 							<p><?php echo _('The extension slug is available in the url (Ex: http://wordpress.org/extend/plugins/<strong>wordpress-seo</strong>)');?></p>
 						</th>
 						<td>
-							<input name="plugins" type="text" id="plugins" size="50" value="wp-website-monitoring; rocket-lazy-load; imagify" />
+							<input name="plugins" type="text" id="plugins" size="50" value="" />
 							<p><?php echo _('Make sure that the extensions slugs are separated by a semicolon (;).');?></p>
 						</td>
 					</tr>
