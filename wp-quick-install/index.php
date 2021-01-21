@@ -1,6 +1,11 @@
 <?php
 /*
 Script Name: WP Quick Install
+Author: Jonathan Buttigieg
+Contributors: Renaud Fradin, Anatole Allain
+Script URI: http://wp-quick-install.com
+Version: 1.4.1
+Licence: GPLv3
 Last Update: 21 jan 2021
 */
 
